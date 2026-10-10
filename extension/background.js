@@ -7,7 +7,7 @@
  */
 
 const CONFIG = {
-  API_BASE_URL: 'http://localhost:8000',
+  API_BASE_URL: 'https://trustshield-alpha.vercel.app',
   API_TIMEOUT_MS: 5000,
   CACHE_TTL_MS: 5 * 60 * 1000,  // 5 minutes
   HIGH_RISK_THRESHOLD: 70,
@@ -584,9 +584,15 @@ async function runScan(url, tabId) {
     recommendation = 'Exercise caution. Verify this website\'s identity before entering any sensitive information.';
   } else {
     classification = 'low_risk';
-    recommendation = allSignals.length > 0
-      ? 'No critical threats detected, but review the noted indicators before sharing sensitive data.'
-      : 'No significant threats detected. Continue browsing safely.';
+    if (!apiResult) {
+      recommendation = allSignals.length > 0
+        ? 'Backend analysis unavailable. Local heuristics detected minor indicators; exercise caution.'
+        : 'Backend analysis unavailable. No local structural threats detected, but ML model verification is offline.';
+    } else {
+      recommendation = allSignals.length > 0
+        ? 'No critical threats detected, but review the noted indicators before sharing sensitive data.'
+        : 'No significant threats detected. Continue browsing safely.';
+    }
   }
 
   // Sort signals to determine the strongest indicator
