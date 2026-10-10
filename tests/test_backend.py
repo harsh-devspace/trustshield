@@ -334,6 +334,42 @@ class TestModelInfoEndpoint:
         data = client.get("/model-info").json()
         assert isinstance(data["features"], list)
 
+# ─── Frontend & Static Route Endpoints ─────────────────────────────────────────
+
+class TestFrontendAndStaticRoutes:
+    def test_root_url_returns_html(self, client):
+        response = client.get("/")
+        assert response.status_code == 200
+        assert "text/html" in response.headers.get("content-type", "")
+        assert "TrustShield" in response.text
+        assert "How TrustShield Detects Phishing" in response.text
+
+    def test_index_html_returns_200(self, client):
+        response = client.get("/index.html")
+        assert response.status_code == 200
+        assert "text/html" in response.headers.get("content-type", "")
+
+    def test_trust_page_returns_html(self, client):
+        response = client.get("/trust")
+        assert response.status_code == 200
+        assert "text/html" in response.headers.get("content-type", "")
+        assert "TrustShield" in response.text
+
+    def test_trust_css_returns_css(self, client):
+        response = client.get("/trust.css")
+        assert response.status_code == 200
+        assert "text/css" in response.headers.get("content-type", "")
+
+    def test_download_extension_returns_zip(self, client):
+        response = client.get("/download/extension")
+        assert response.status_code == 200
+        assert "application/zip" in response.headers.get("content-type", "")
+
+    def test_docs_endpoint_returns_200(self, client):
+        response = client.get("/docs")
+        assert response.status_code == 200
+        assert "Swagger UI" in response.text
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])

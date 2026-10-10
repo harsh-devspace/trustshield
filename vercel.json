@@ -1,7 +1,23 @@
 {
+  "version": 2,
   "cleanUrls": true,
+  "functions": {
+    "api/index.py": {
+      "runtime": "@vercel/python",
+      "includeFiles": "index.html,trust.css,trustshield-extension.zip,extension/**,backend/**"
+    }
+  },
   "rewrites": [
-    { "source": "/trust", "destination": "/index.html" },
-    { "source": "/download/extension", "destination": "/trustshield-extension.zip" }
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/analyze", "destination": "/api/index.py" },
+    { "source": "/health", "destination": "/api/index.py" },
+    { "source": "/model-info", "destination": "/api/index.py" },
+    { "source": "/methodology", "destination": "/api/index.py" },
+    { "source": "/threat-intel/status", "destination": "/api/index.py" },
+    { "source": "/docs", "destination": "/api/index.py" },
+    { "source": "/openapi.json", "destination": "/api/index.py" },
+    { "source": "/redoc", "destination": "/api/index.py" },
+    { "source": "/download/extension", "destination": "/trustshield-extension.zip" },
+    { "source": "/trust", "destination": "/index.html" }
   ]
 }

@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import time
 import logging
@@ -198,8 +198,76 @@ async def methodology():
 
 # ─── Extension Distribution & Website Endpoints ──────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+APP_DIR = Path(__file__).resolve().parent
 EXTENSION_DIR = BASE_DIR / "extension"
 ZIP_PATH = BASE_DIR / "trustshield-extension.zip"
+
+INDEX_HTML_CANDIDATES = [
+    BASE_DIR / "index.html",
+    APP_DIR / "index.html",
+    Path("index.html"),
+    EXTENSION_DIR / "trust.html",
+    APP_DIR / "trust.html",
+    Path("extension/trust.html"),
+]
+
+TRUST_CSS_CANDIDATES = [
+    BASE_DIR / "trust.css",
+    APP_DIR / "trust.css",
+    Path("trust.css"),
+    EXTENSION_DIR / "trust.css",
+    Path("extension/trust.css"),
+]
+
+
+def _resolve_file(candidates: list[Path]) -> Path | None:
+    for c in candidates:
+        if c.exists() and c.is_file():
+            return c
+    return None
+
+
+@app.get(
+    "/",
+    response_class=HTMLResponse,
+    summary="TrustShield Portal & Methodology",
+    tags=["Frontend"],
+    include_in_schema=False,
+)
+@app.get(
+    "/index.html",
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
+async def root_index():
+    """Serves the TrustShield trust, transparency, and installation guide webpage."""
+    f = _resolve_file(INDEX_HTML_CANDIDATES)
+    if f:
+        return HTMLResponse(content=f.read_text(encoding="utf-8"))
+    raise HTTPException(status_code=404, detail="index.html not found.")
+
+
+@app.get(
+    "/trust.css",
+    include_in_schema=False,
+)
+async def trust_css():
+    """Serves the stylesheet for the TrustShield transparency webpage."""
+    f = _resolve_file(TRUST_CSS_CANDIDATES)
+    if f:
+        return FileResponse(path=f, media_type="text/css")
+    raise HTTPException(status_code=404, detail="trust.css not found.")
+
+
+@app.get(
+    "/trust",
+    response_class=HTMLResponse,
+    summary="Interactive TrustShield Detection & Trust Methodology Website",
+    tags=["Transparency"],
+)
+async def trust_page():
+    """Serves the TrustShield trust, transparency, and installation guide webpage."""
+    return await root_index()
 
 
 @app.get(
@@ -214,43 +282,37 @@ ZIP_PATH = BASE_DIR / "trustshield-extension.zip"
 )
 async def download_extension():
     """Serves the complete distributable TrustShield Chrome Manifest V3 extension package."""
-    if not ZIP_PATH.exists():
-        # Fallback to extension directory zip if available
-        alt_zip = EXTENSION_DIR / "trustshield-extension.zip"
-        if alt_zip.exists():
-            return FileResponse(
-                path=alt_zip,
-                filename="trustshield-extension.zip",
-                media_type="application/zip",
-                headers={"Content-Disposition": "attachment; filename=trustshield-extension.zip"},
-            )
-        raise HTTPException(
-            status_code=404,
-            detail="Extension ZIP package not found. Run scripts/package_extension.py first.",
+    zip_candidates = [
+        ZIP_PATH,
+        Path("trustshield-extension.zip"),
+        APP_DIR / "trustshield-extension.zip",
+        EXTENSION_DIR / "trustshield-extension.zip",
+        Path("extension/trustshield-extension.zip"),
+    ]
+    f = _resolve_file(zip_candidates)
+    if f:
+        return FileResponse(
+            path=f,
+            filename="trustshield-extension.zip",
+            media_type="application/zip",
+            headers={"Content-Disposition": "attachment; filename=trustshield-extension.zip"},
         )
-
-    return FileResponse(
-        path=ZIP_PATH,
-        filename="trustshield-extension.zip",
-        media_type="application/zip",
-        headers={"Content-Disposition": "attachment; filename=trustshield-extension.zip"},
+    raise HTTPException(
+        status_code=404,
+        detail="Extension ZIP package not found. Run scripts/package_extension.py first.",
     )
 
 
-@app.get(
-    "/trust",
-    summary="Interactive TrustShield Detection & Trust Methodology Website",
-    tags=["Transparency"],
-)
-async def trust_page():
-    """Serves the TrustShield trust, transparency, and installation guide webpage."""
-    trust_html = EXTENSION_DIR / "trust.html"
-    if not trust_html.exists():
-        raise HTTPException(status_code=404, detail="trust.html not found.")
-    return FileResponse(path=trust_html, media_type="text/html")
+# Mount static assets if directories exist
+for asset_dir in [
+    BASE_DIR / "extension" / "assets",
+    EXTENSION_DIR / "assets",
+    APP_DIR / "assets",
+    Path("extension/assets"),
+]:
+    if asset_dir.exists() and asset_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(asset_dir)), name="assets")
+        app.mount("/extension/assets", StaticFiles(directory=str(asset_dir)), name="extension_assets")
+        break
 
-
-# Mount static assets for web viewing of trust methodology documentation
-if EXTENSION_DIR.exists():
-    app.mount("/static-extension", StaticFiles(directory=str(EXTENSION_DIR)), name="static_extension")
 
