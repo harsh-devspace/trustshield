@@ -16,6 +16,12 @@ pip-wheel-metadata/
 # Virtual environments
 trustshield_env/
 .env
+.env*.local
+.env.local
+!.env.example
+
+# Vercel
+.vercel/
 
 # Model artifacts (large binary files)
 # Keep the model artifacts in the repo for demo purposes

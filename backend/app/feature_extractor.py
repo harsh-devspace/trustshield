@@ -14,6 +14,9 @@ from typing import Dict, Any, Optional
 from urllib.parse import urlparse, unquote
 
 
+import math
+from collections import Counter
+
 # TLDs frequently associated with disposable/low-cost phishing infrastructure
 SUSPICIOUS_TLDS = {
     ".tk", ".ml", ".ga", ".cf", ".gq", ".pw",
@@ -30,8 +33,67 @@ CREDENTIAL_KEYWORDS = [
     "password", "credential", "auth", "authenticate",
 ]
 
+# Targeted brands commonly spoofed in phishing campaigns
+TARGET_BRANDS = [
+    {"brand": "PayPal", "domains": ["paypal.com"]},
+    {"brand": "Google", "domains": ["google.com", "accounts.google.com", "gmail.com"]},
+    {"brand": "Microsoft", "domains": ["microsoft.com", "login.microsoftonline.com", "live.com", "office.com"]},
+    {"brand": "Apple", "domains": ["apple.com", "icloud.com"]},
+    {"brand": "Amazon", "domains": ["amazon.com", "amazon.in", "amazon.co.uk"]},
+    {"brand": "Meta", "domains": ["facebook.com", "meta.com", "instagram.com", "whatsapp.com"]},
+    {"brand": "Netflix", "domains": ["netflix.com"]},
+    {"brand": "Banking", "domains": ["chase.com", "wellsfargo.com", "bankofamerica.com", "hdfcbank.com", "icicibank.com", "onlinesbi.sbi"]},
+]
+
+# Common Cyrillic and Greek homoglyphs impersonating Latin letters in IDN attacks
+HOMOGLYPH_CHARS = {
+    '\u0430': 'a', '\u0435': 'e', '\u043E': 'o', '\u0440': 'p', '\u0441': 'c',
+    '\u0443': 'y', '\u0445': 'x', '\u0456': 'i', '\u0458': 'j', '\u03BF': 'o',
+    '\u03C1': 'p', '\u03BD': 'v'
+}
+
 # Private/loopback IP ranges (simplified check — not a substitute for proper SSRF protection)
 _IP_PATTERN = re.compile(r"^(\d{1,3}\.){3}\d{1,3}$")
+
+
+def calculate_shannon_entropy(s: str) -> float:
+    """Calculate the Shannon entropy of a string in bits per symbol."""
+    if not s:
+        return 0.0
+    length = len(s)
+    counts = Counter(s)
+    entropy = -sum((count / length) * math.log2(count / length) for count in counts.values())
+    return round(entropy, 4)
+
+
+def detect_idn_homoglyph(hostname: str) -> bool:
+    """Detect whether hostname uses Punycode (xn--) or Cyrillic/Greek homoglyphs."""
+    if not hostname:
+        return False
+    hostname_lower = hostname.lower()
+    if hostname_lower.startswith("xn--") or ".xn--" in hostname_lower:
+        return True
+    return any(char in hostname_lower for char in HOMOGLYPH_CHARS)
+
+
+def detect_brand_impersonation(hostname: str) -> tuple[bool, Optional[str]]:
+    """
+    Detect whether an unauthorized hostname contains trademarked brand names.
+    Returns (is_impersonation, brand_name).
+    """
+    if not hostname:
+        return False, None
+    hostname_lower = hostname.lower()
+    for brand_info in TARGET_BRANDS:
+        brand_key = brand_info["brand"].lower()
+        if brand_key in hostname_lower:
+            is_verified = any(
+                hostname_lower == legit or hostname_lower.endswith("." + legit)
+                for legit in brand_info["domains"]
+            )
+            if not is_verified:
+                return True, brand_info["brand"]
+    return False, None
 
 
 def extract_url_features(url: str) -> Dict[str, Any]:
@@ -103,6 +165,12 @@ def extract_url_features(url: str) -> Dict[str, Any]:
     # URL encoding present
     has_encoding = int("%" in full_url)
 
+    # Forensic telemetry features
+    hostname_entropy = calculate_shannon_entropy(hostname)
+    has_homoglyph = int(detect_idn_homoglyph(hostname))
+    is_impersonating, impersonated_brand = detect_brand_impersonation(hostname)
+    has_brand_impersonation = int(is_impersonating)
+
     return {
         "url_length":               url_length,
         "hostname_length":          len(hostname),
@@ -121,6 +189,10 @@ def extract_url_features(url: str) -> Dict[str, Any]:
         "special_char_count":       special_char_count,
         "slash_count":              slash_count,
         "has_encoding":             has_encoding,
+        "hostname_entropy":         hostname_entropy,
+        "has_homoglyph":            has_homoglyph,
+        "has_brand_impersonation":  has_brand_impersonation,
+        "impersonated_brand":       impersonated_brand or "",
     }
 
 
@@ -158,6 +230,8 @@ def merge_features(
     if dom_features:
         merged.update({
             "has_password_input":   dom_features.get("has_password_input", 0) or 0,
+            "has_payment_input":    dom_features.get("has_payment_input", 0) or 0,
+            "payment_input_count":  dom_features.get("payment_input_count", 0) or 0,
             "form_count":           dom_features.get("form_count", 0) or 0,
             "external_form_count":  dom_features.get("external_form_count", 0) or 0,
             "has_external_form":    dom_features.get("has_external_form", 0) or 0,
@@ -167,6 +241,8 @@ def merge_features(
     else:
         merged.update({
             "has_password_input":   0,
+            "has_payment_input":    0,
+            "payment_input_count":  0,
             "form_count":           0,
             "external_form_count":  0,
             "has_external_form":    0,

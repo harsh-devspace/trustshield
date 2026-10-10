@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/analyze", "destination": "/api/index.py" },
+    { "source": "/health", "destination": "/api/index.py" },
+    { "source": "/model-info", "destination": "/api/index.py" },
+    { "source": "/methodology", "destination": "/api/index.py" },
+    { "source": "/threat-intel/status", "destination": "/api/index.py" },
+    { "source": "/download/extension", "destination": "/api/index.py" },
+    { "source": "/trust", "destination": "/index.html" },
+    { "source": "/extension-assets/(.*)", "destination": "/extension/assets/$1" }
+  ]
+}

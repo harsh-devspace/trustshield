@@ -48,6 +48,9 @@ HEURISTIC_WEIGHTS = {
     "long_url":                  8,    # > 100 chars
     "url_encoding":              5,
     "ip_with_keywords":          22,   # IP + credential keyword combo
+    "idn_homoglyph_spoof":       45,   # Spoofed Cyrillic/Greek alphabet or Punycode attack
+    "brand_impersonation":       45,   # Unauthorized brand domain impersonation
+    "high_entropy_domain":       18,   # High lexical randomness (DGA / obfuscation)
 }
 
 
@@ -93,9 +96,9 @@ class RiskEngine:
         # ─── Step 1: Extract features server-side ─────────────────────────────
         server_features = extract_url_features(url)
 
-        # Convert Pydantic models to dicts if provided
-        url_feat_dict = url_features.model_dump() if url_features else None
-        dom_feat_dict = dom_features.model_dump() if dom_features else None
+        # Convert Pydantic models to dicts if provided (or keep if already dict)
+        url_feat_dict = url_features.model_dump() if hasattr(url_features, "model_dump") else (url_features if isinstance(url_features, dict) else None)
+        dom_feat_dict = dom_features.model_dump() if hasattr(dom_features, "model_dump") else (dom_features if isinstance(dom_features, dict) else None)
 
         # Merge features (server-extracted URL features are canonical)
         all_features = merge_features(server_features, url_feat_dict, dom_feat_dict)
@@ -110,7 +113,8 @@ class RiskEngine:
 
         # ─── Step 3.5: Optional Threat Intelligence Lookup ────────────────────
         ti_signals = []
-        if self.threat_intel and self.threat_intel.is_configured():
+        threat_intel_configured = bool(self.threat_intel and self.threat_intel.is_configured())
+        if threat_intel_configured:
             ti_result = self.threat_intel.check_url(url)
             if ti_result.get("is_threat"):
                 threat_type = ti_result.get("threat_type", "MALICIOUS")
@@ -119,6 +123,7 @@ class RiskEngine:
                     severity="high",
                     description=f"Confirmed threat match in {ti_result.get('provider')}: {ti_result.get('details')}",
                     source="threat_intel",
+                    points=95,
                 ))
 
         # ─── Step 4: ML prediction ────────────────────────────────────────────
@@ -140,6 +145,7 @@ class RiskEngine:
                     severity="high",
                     description=f"The ML model predicts a {phishing_prob:.0%} probability of phishing.",
                     source="ml",
+                    points=ml_score_contribution,
                 ))
             elif phishing_prob >= 0.45:
                 ml_signals.append(Signal(
@@ -147,6 +153,7 @@ class RiskEngine:
                     severity="medium",
                     description=f"The ML model is uncertain ({phishing_prob:.0%} phishing probability). Other signals should guide this assessment.",
                     source="ml",
+                    points=ml_score_contribution,
                 ))
             # Low ML score alone does not produce a signal (avoids false reassurance)
 
@@ -211,6 +218,27 @@ class RiskEngine:
                 "note that this score does not certify the page safe from deceptive downloads, malvertising, or social engineering."
             )
 
+        checks_performed = ["url_lexical_structure", "shannon_entropy", "homoglyph_detection"]
+        checks_unavailable = []
+        if dom_feat_dict and any(dom_feat_dict.values()):
+            checks_performed.append("dom_form_inspection")
+        else:
+            checks_unavailable.append("dom_probe_unavailable")
+
+        if model_available:
+            checks_performed.append("random_forest_ml_inference")
+        else:
+            checks_unavailable.append("ml_model_offline")
+
+        if threat_intel_configured:
+            checks_performed.append("threat_intelligence_feed")
+        else:
+            checks_unavailable.append("threat_intel_feed_unconfigured")
+
+        strongest_indicator = all_signals[0].description if all_signals else (
+            "No credential-harvesting forms or deceptive URL patterns detected."
+        )
+
         score_breakdown = ScoreBreakdown(
             heuristic_score=heuristic_score,
             ml_contribution=ml_score_contribution,
@@ -218,6 +246,13 @@ class RiskEngine:
             raw_blended_score=round(float(raw_score), 2),
             evidence_level=evidence_level,
             confidence_note=confidence_note,
+            entropy=server_features.get("hostname_entropy"),
+            brand_impersonation=server_features.get("impersonated_brand") or None,
+            ml_phishing_probability=round(ml_prob, 4) if model_available else None,
+            threat_intel_match=bool(ti_signals),
+            checks_performed=checks_performed,
+            checks_unavailable=checks_unavailable,
+            strongest_indicator=strongest_indicator,
         )
 
         # ─── Step 9: Recommendation ───────────────────────────────────────────
@@ -246,6 +281,7 @@ class RiskEngine:
                 severity="high",
                 description="The website uses an IP address instead of a registered domain name. Legitimate sites almost always use domain names.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["ip_based_host"],
             ))
             score += HEURISTIC_WEIGHTS["ip_based_host"]
 
@@ -255,6 +291,7 @@ class RiskEngine:
                 severity="high",
                 description="The URL contains an @ symbol. Browsers interpret everything before @ as credentials, making the visible part appear legitimate while the actual destination differs.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["at_symbol_in_url"],
             ))
             score += HEURISTIC_WEIGHTS["at_symbol_in_url"]
 
@@ -264,6 +301,7 @@ class RiskEngine:
                 severity="medium",
                 description="The URL path contains a double slash pattern that may indicate an obfuscated redirect to a different site.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["double_slash_redirect"],
             ))
             score += HEURISTIC_WEIGHTS["double_slash_redirect"]
 
@@ -274,6 +312,7 @@ class RiskEngine:
                 severity="medium",
                 description=f"The URL has {subdomain_count} subdomain levels. Phishing sites sometimes mimic legitimate domains using excessive subdomains.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["excessive_subdomains"],
             ))
             score += HEURISTIC_WEIGHTS["excessive_subdomains"]
 
@@ -283,6 +322,7 @@ class RiskEngine:
                 severity="medium",
                 description="The site does not use HTTPS. Any data submitted may be transmitted in plaintext and could be intercepted.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["no_https"],
             ))
             score += HEURISTIC_WEIGHTS["no_https"]
 
@@ -292,6 +332,7 @@ class RiskEngine:
                 severity="medium",
                 description="The domain extension is commonly associated with free, disposable, or low-accountability domain registrations used in phishing campaigns.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["suspicious_tld"],
             ))
             score += HEURISTIC_WEIGHTS["suspicious_tld"]
 
@@ -302,6 +343,7 @@ class RiskEngine:
                 severity="low",
                 description=f"The URL is unusually long ({url_length} characters). Long URLs can be used to hide the actual destination or overwhelm URL inspection.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["long_url"],
             ))
             score += HEURISTIC_WEIGHTS["long_url"]
 
@@ -311,8 +353,45 @@ class RiskEngine:
                 severity="low",
                 description="The URL contains percent-encoded characters, which can be used to obscure the actual content of the address.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["url_encoding"],
             ))
             score += HEURISTIC_WEIGHTS["url_encoding"]
+
+        # IDN Homoglyph / Punycode Attack Detection
+        if features.get("has_homoglyph"):
+            signals.append(Signal(
+                code="idn_homoglyph_spoof",
+                severity="high",
+                description="The domain uses internationalized characters (IDN) or Cyrillic/Greek homoglyphs to deceptively masquerade as another website.",
+                source="heuristic",
+                points=HEURISTIC_WEIGHTS["idn_homoglyph_spoof"],
+            ))
+            score += HEURISTIC_WEIGHTS["idn_homoglyph_spoof"]
+
+        # Brand Impersonation / Typosquatting Check
+        if features.get("has_brand_impersonation"):
+            brand_target = features.get("impersonated_brand") or "recognized brand"
+            signals.append(Signal(
+                code="brand_impersonation",
+                severity="high",
+                description=f"The domain includes the trademarked brand name '{brand_target}' on unauthorized infrastructure.",
+                source="heuristic",
+                points=HEURISTIC_WEIGHTS["brand_impersonation"],
+            ))
+            score += HEURISTIC_WEIGHTS["brand_impersonation"]
+
+        # Shannon Entropy / DGA Random String Detection
+        entropy = features.get("hostname_entropy", 0.0) or 0.0
+        hostname_len = features.get("hostname_length", 0) or len(parsed.hostname or "")
+        if entropy > 3.9 and hostname_len > 12:
+            signals.append(Signal(
+                code="high_entropy_domain",
+                severity="medium",
+                description=f"High hostname randomness (Shannon entropy {entropy:.2f}), indicative of algorithmically generated domains (DGA) or disposable hosting.",
+                source="heuristic",
+                points=HEURISTIC_WEIGHTS["high_entropy_domain"],
+            ))
+            score += HEURISTIC_WEIGHTS["high_entropy_domain"]
 
         # Compound: IP + credential keywords = stronger signal
         if features.get("has_ip_host") and features.get("has_suspicious_keywords"):
@@ -321,6 +400,7 @@ class RiskEngine:
                 severity="high",
                 description="The URL combines an IP-based host with login or account-related keywords — a pattern strongly associated with credential phishing.",
                 source="heuristic",
+                points=HEURISTIC_WEIGHTS["ip_with_keywords"],
             ))
             score += HEURISTIC_WEIGHTS["ip_with_keywords"]
 
@@ -331,6 +411,7 @@ class RiskEngine:
                 severity="medium",
                 description="The URL combines a high-risk domain extension with credential or account keywords, a pattern frequently observed in phishing impersonation.",
                 source="heuristic",
+                points=15,
             ))
             score += 15
 
@@ -342,15 +423,38 @@ class RiskEngine:
         score = 0
 
         has_password = dom_features.get("has_password_input", 0)
+        has_payment = dom_features.get("has_payment_input", 0)
         has_external_form = dom_features.get("has_external_form", 0)
         external_form_count = dom_features.get("external_form_count", 0) or 0
 
+        # Payment card harvesting checks
+        if has_payment and has_external_form:
+            signals.append(Signal(
+                code="payment_form_external_submit",
+                severity="high",
+                description="The page contains credit card or payment collection fields whose form submits data to an external third-party domain.",
+                source="dom",
+                points=40,
+            ))
+            score += 40
+        elif has_payment:
+            signals.append(Signal(
+                code="payment_input_detected",
+                severity="low",
+                description="Payment card collection fields detected on this page. Verify merchant identity before entering payment details.",
+                source="dom",
+                points=8,
+            ))
+            score += 8
+
+        # Credential checks
         if has_password and has_external_form:
             signals.append(Signal(
                 code="credential_form_external_submit",
                 severity="high",
                 description="The page contains a password field whose form submits data to a different domain. This is a hallmark of credential phishing attacks.",
                 source="dom",
+                points=35,
             ))
             score += 35
 
@@ -360,6 +464,7 @@ class RiskEngine:
                 severity="medium",
                 description=f"{external_form_count} form(s) on this page submit data to a different domain than the page itself.",
                 source="dom",
+                points=15,
             ))
             score += 15
 
@@ -369,6 +474,7 @@ class RiskEngine:
                 severity="low",
                 description="The page requests your password. Verify the site's identity before entering credentials.",
                 source="dom",
+                points=0,
             ))
             # Low penalty — many legitimate sites have login forms
 

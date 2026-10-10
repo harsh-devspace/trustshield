@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Security Account Verification Portal</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 50px 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .panel {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      max-width: 440px;
+      width: 100%;
+    }
+    h2 { color: #f59e0b; margin-top: 0; font-size: 18px; }
+    p { font-size: 13px; color: #94a3b8; }
+    .warning-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 20px;
+      color: #fbbf24;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 16px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #f8fafc;
+      box-sizing: border-box;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #d97706;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .meta { font-size: 10px; color: #64748b; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h2>SECURITY RECOVERY ALERT</h2>
+    <div class="warning-box">
+      Suspicious activity was detected on your account session. Please re-authenticate your credentials.
+    </div>
+
+    <!-- Suspicious structure with ambiguous target action -->
+    <form action="http://auth-recovery-session-verify.secure-token.test/verify" method="POST">
+      <label>Email Address</label>
+      <input type="email" name="email" value="user@domain.com" />
+
+      <label>Temporary Security Passcode</label>
+      <input type="password" name="passcode" placeholder="Enter security passcode" />
+
+      <button type="submit">Verify Identity Now</button>
+    </form>
+
+    <div class="meta">
+      TEST BENCH TARGET: SUSPICIOUS ANOMALY MOCK<br />
+      Simulates: Hyphenated security lures + unencrypted action
+    </div>
+  </div>
+</body>
+</html>

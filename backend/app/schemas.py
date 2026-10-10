@@ -29,12 +29,18 @@ class UrlFeatures(BaseModel):
     special_char_count: Optional[int] = None
     slash_count: Optional[int] = None
     has_encoding: Optional[int] = None       # 0 or 1
+    hostname_entropy: Optional[float] = None
+    has_homoglyph: Optional[int] = None      # 0 or 1
+    has_brand_impersonation: Optional[int] = None # 0 or 1
+    impersonated_brand: Optional[str] = None
 
 
 class DomFeatures(BaseModel):
     """Pre-extracted DOM structural features from the browser content script."""
     has_password_input: Optional[int] = None     # 0 or 1
     password_input_count: Optional[int] = None
+    has_payment_input: Optional[int] = None      # 0 or 1 (card/cvv/pan input detection)
+    payment_input_count: Optional[int] = None
     form_count: Optional[int] = None
     external_form_count: Optional[int] = None
     external_iframe_count: Optional[int] = None
@@ -143,6 +149,7 @@ class Signal(BaseModel):
     severity: Literal["high", "medium", "low"]
     description: str
     source: Literal["heuristic", "ml", "dom", "threat_intel"] = "heuristic"
+    points: Optional[int] = Field(None, description="Attributed score contribution points")
 
 
 class ScoreBreakdown(BaseModel):
@@ -159,6 +166,13 @@ class ScoreBreakdown(BaseModel):
         ...,
         description="Notice explaining evidence limits (e.g. low score does not guarantee safe software downloads)"
     )
+    entropy: Optional[float] = Field(None, description="Calculated Shannon entropy of hostname")
+    brand_impersonation: Optional[str] = Field(None, description="Identified brand target if spoofed")
+    ml_phishing_probability: Optional[float] = Field(None, description="Raw ML model predicted phishing probability (0.0 to 1.0)")
+    threat_intel_match: bool = Field(False, description="Whether confirmed match in threat feed was obtained")
+    checks_performed: List[str] = Field(default_factory=list, description="List of verification modules executed")
+    checks_unavailable: List[str] = Field(default_factory=list, description="List of checks that were offline or unavailable")
+    strongest_indicator: Optional[str] = Field(None, description="Human-readable summary of the most critical finding")
 
 
 class AnalyzeResponse(BaseModel):

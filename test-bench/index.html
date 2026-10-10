@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrustShield — Forensic Test Bench</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    :root {
+      --bg: #0a0c10;
+      --surface: #12151d;
+      --elevated: #191e29;
+      --border: #242b3a;
+      --lime: #ccff00;
+      --lime-dim: rgba(204, 255, 0, 0.1);
+      --text: #e5e7eb;
+      --text-bright: #ffffff;
+      --muted: #9ca3af;
+      --safe: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-bright);
+      letter-spacing: 0.5px;
+    }
+
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid rgba(204, 255, 0, 0.3);
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .intro {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: var(--lime);
+      transform: translateY(-2px);
+    }
+
+    .card--safe { border-top: 3px solid var(--safe); }
+    .card--warn { border-top: 3px solid var(--warn); }
+    .card--danger { border-top: 3px solid var(--danger); }
+
+    .card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--elevated);
+      border-radius: 3px;
+      color: var(--text);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      background: var(--elevated);
+      color: var(--lime);
+      border: 1px solid rgba(204, 255, 0, 0.3);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--lime);
+      color: #0b0f02;
+    }
+
+    .notice {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--lime);
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .notice strong { color: var(--text-bright); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div class="title">TRUSTSHIELD // TEST BENCH</div>
+        <div style="font-family: monospace; font-size: 11px; color: var(--lime); margin-top: 4px;">LOCAL FORENSIC SCENARIO SUITE</div>
+      </div>
+      <div class="badge">OFFLINE TEST HARNESS</div>
+    </div>
+
+    <p class="intro">
+      This test harness provides safe, local HTML targets to verify TrustShield's phishing detection engine,
+      DOM form harvesting detectors, Shannon entropy computation, and visual threat meter without accessing malicious live websites.
+    </p>
+
+    <div class="grid">
+      <!-- Target 1: Legitimate Portal -->
+      <div class="card card--safe">
+        <div>
+          <div class="card-title">01. BENIGN PORTAL</div>
+          <p class="card-desc">Simulated authentic institutional authentication portal with same-origin forms and clean structural properties.</p>
+          <div class="tag-list">
+            <span class="tag">Same-Origin Action</span>
+            <span class="tag">Standard Entropy</span>
+            <span class="tag">Clean TLD</span>
+          </div>
+        </div>
+        <a href="target_legit.html" class="btn" target="_blank">Launch Benign Target &rarr;</a>
+      </div>
+
+      <!-- Target 2: Suspicious Target -->
+      <div class="card card--warn">
+        <div>
+          <div class="card-title">02. ANOMALOUS / SUSPICIOUS</div>
+          <p class="card-desc">Simulated ambiguous target with excessive hyphens, long query strings, and security lure keywords.</p>
+          <div class="tag-list">
+            <span class="tag">Multi-Hyphen Domain</span>
+            <span class="tag">Keywords</span>
+            <span class="tag">High-Entropy Path</span>
+          </div>
+        </div>
+        <a href="target_suspicious.html" class="btn" target="_blank">Launch Suspicious Target &rarr;</a>
+      </div>
+
+      <!-- Target 3: Phishing / Harvesting Mock -->
+      <div class="card card--danger">
+        <div>
+          <div class="card-title">03. HOSTILE HARVESTER</div>
+          <p class="card-desc">Simulated zero-day brand impersonation target collecting passwords and credit cards with external exfiltration routing.</p>
+          <div class="tag-list">
+            <span class="tag">Brand Spoofing</span>
+            <span class="tag">Card Harvester</span>
+            <span class="tag">Cross-Origin Form</span>
+          </div>
+        </div>
+        <a href="target_phishing.html" class="btn" target="_blank">Launch Phishing Target &rarr;</a>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>Verification Instructions:</strong> Click any scenario to launch the local target. Open the TrustShield extension popup in Chrome and click <strong>"Execute Forensic Scan"</strong>. Verify the detected indicators, linear threat index, telemetry strip, and click <strong>"Export CERT Dossier"</strong> to copy the structured incident JSON.
+    </div>
+  </div>
+</body>
+</html>

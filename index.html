@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrustShield — Detection &amp; Trust Methodology</title>
+  <link rel="stylesheet" href="trust.css" />
+</head>
+<body>
+  <div class="ts-page">
+    <!-- Top Header -->
+    <header class="ts-page-header">
+      <div class="ts-container ts-header-inner">
+        <div class="ts-brand">
+          <svg class="ts-brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2L4 7v9c0 7.18 5.16 13.9 12 15.93C22.84 29.9 28 23.18 28 16V7L16 2z" fill="url(#shieldGrad)" stroke="rgba(99,210,255,0.3)" stroke-width="0.5"/>
+            <path d="M11 16l3.5 3.5L21 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="shieldGrad" x1="16" y1="2" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#1d4ed8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="ts-brand-name">TrustShield</span>
+          <span class="ts-badge-transparency">Transparency &amp; Methodology</span>
+        </div>
+        <div class="ts-header-actions">
+          <a href="#download" class="ts-btn-download-nav">Download Extension</a>
+          <a href="#download" class="ts-btn-back">Install Guide ↓</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="ts-hero">
+      <div class="ts-container">
+        <h1 class="ts-hero-title">How TrustShield Detects Phishing</h1>
+        <p class="ts-hero-subtitle">
+          An honest, evidence-based guide to our detection architecture, machine learning models,
+          evaluation benchmarks, privacy guarantees, and known security limitations.
+        </p>
+        <div class="ts-hero-meta">
+          <span class="ts-meta-pill">Engine: v1.0.0</span>
+          <span class="ts-meta-pill">Architecture: Hybrid (ML + Structural Heuristics)</span>
+          <span class="ts-meta-pill">Privacy: Zero Content Collection</span>
+        </div>
+        <div class="ts-hero-cta" style="margin-top: 24px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+          <a href="trustshield-extension.zip" download="trustshield-extension.zip" class="ts-btn-download-primary" id="heroDownloadBtn">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+            Download Chrome Extension (.ZIP)
+          </a>
+          <a href="#download" class="ts-btn-hero-secondary">Installation &amp; Setup Guide &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="ts-container ts-main-content">
+
+      <!-- 1. What TrustShield Checks -->
+      <section class="ts-card" id="checks">
+        <h2 class="ts-card-title">
+          <span class="ts-step-num">1</span>
+          What TrustShield Checks
+        </h2>
+        <p class="ts-card-desc">
+          TrustShield analyzes web pages at three privacy-preserving tiers without reading sensitive page contents:
+        </p>
+        <div class="ts-grid-3">
+          <div class="ts-subcard">
+            <h3 class="ts-subcard-title">Tier 1: URL Structural Heuristics</h3>
+            <p>Inspects the address string for deceptive evasion techniques:</p>
+            <ul class="ts-list">
+              <li>Raw IP-based hostnames instead of registered domains</li>
+              <li>Deceptive <code>@</code> credential tricks in URL authority</li>
+              <li>Obfuscated double-slash (<code>//</code>) redirect sequences</li>
+              <li>Excessive subdomain depth (&gt; 3 levels)</li>
+              <li>High-risk disposable domain extensions (e.g., <code>.tk</code>, <code>.ml</code>, <code>.xyz</code>)</li>
+              <li>Suspicious keywords combined with risky TLDs</li>
+            </ul>
+          </div>
+          <div class="ts-subcard">
+            <h3 class="ts-subcard-title">Tier 2: DOM Structural Signals</h3>
+            <p>Analyzes page structure locally in the browser sandbox:</p>
+            <ul class="ts-list">
+              <li>Presence of password input fields</li>
+              <li>Forms submitting data to external third-party domains</li>
+              <li>Cross-origin iframe density</li>
+              <li>Favicon origin consistency</li>
+              <li><em>Never reads passwords, text input, or cookies</em></li>
+            </ul>
+          </div>
+          <div class="ts-subcard">
+            <h3 class="ts-subcard-title">Tier 3: Machine Learning Model</h3>
+            <p>Evaluates an 11-dimensional feature vector:</p>
+            <ul class="ts-list">
+              <li>Random Forest classifier with 200 estimators</li>
+              <li>Extracts non-linear feature interactions</li>
+              <li>Generates probabilistic phishing risk contribution</li>
+              <li>Operates offline with sub-50ms inference latency</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Technology Stack Audit -->
+      <section class="ts-card" id="tech-stack">
+        <h2 class="ts-card-title">
+          <span class="ts-step-num">2</span>
+          Confirmed Technology Stack
+        </h2>
+        <div class="ts-table-wrapper">
+          <table class="ts-table">
+            <thead>
+              <tr>
+                <th>Library / Tool</th>
+                <th>Version</th>
+                <th>Actual Role in Pipeline</th>
+                <th>Execution Mode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>FastAPI</strong></td>
+                <td>0.143.0</td>
+                <td>Asynchronous backend REST API controller</td>
+                <td>Active server</td>
+              </tr>
+              <tr>
+                <td><strong>Pydantic</strong></td>
+                <td>2.14.0</td>
+                <td>Request schema validation &amp; SSRF IP filtering</td>
+                <td>Every request</td>
+              </tr>
+              <tr>
+                <td><strong>scikit-learn</strong></td>
+                <td>1.9.1</td>
+                <td>RandomForestClassifier inference &amp; evaluation</td>
+                <td>Loaded in lifespan</td>
+              </tr>
+              <tr>
+                <td><strong>NumPy</strong></td>
+                <td>2.5.3</td>
+                <td>Vector formatting &amp; array manipulation</td>
+                <td>Inference vector</td>
+              </tr>
+              <tr>
+                <td><strong>Joblib</strong></td>
+                <td>1.6.0</td>
+                <td>Model artifact deserialization &amp; caching</td>
+                <td>Startup load</td>
+              </tr>
+              <tr>
+                <td><strong>Chrome MV3</strong></td>
+                <td>Manifest V3</td>
+                <td>Service worker &amp; sandboxed content script</td>
+                <td>Browser client</td>
+              </tr>
+              <tr>
+                <td><strong>Google Safe Browsing</strong></td>
+                <td>API v4</td>
+                <td>Optional external reputation feed (requires API key)</td>
+                <td>Optional plug-in</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. Dataset & Empirical Metrics -->
+      <section class="ts-card" id="metrics">
+        <h2 class="ts-card-title">
+          <span class="ts-step-num">3</span>
+          Empirical Model Evaluation &amp; Dataset
+        </h2>
+        <p class="ts-card-desc">
+          The machine learning model is trained on structural URL and DOM features aligned with the
+          <strong>UCI Phishing Websites Dataset</strong> schema. Below are verified empirical metrics measured
+          on an independent held-out benchmark set (N=11,055):
+        </p>
+
+        <div class="ts-stats-grid">
+          <div class="ts-stat-card">
+            <span class="ts-stat-value">97.69%</span>
+            <span class="ts-stat-label">Accuracy</span>
+          </div>
+          <div class="ts-stat-card">
+            <span class="ts-stat-value">97.37%</span>
+            <span class="ts-stat-label">Precision</span>
+          </div>
+          <div class="ts-stat-card">
+            <span class="ts-stat-value">97.43%</span>
+            <span class="ts-stat-label">Recall</span>
+          </div>
+          <div class="ts-stat-card">
+            <span class="ts-stat-value">97.40%</span>
+            <span class="ts-stat-label">F1 Score</span>
+          </div>
+          <div class="ts-stat-card">
+            <span class="ts-stat-value">2.10%</span>
+            <span class="ts-stat-label">False Positive Rate</span>
+          </div>
+          <div class="ts-stat-card">
+            <span class="ts-stat-value">2.57%</span>
+            <span class="ts-stat-label">False Negative Rate</span>
+          </div>
+        </div>
+
+        <div class="ts-cm-box">
+          <h3 class="ts-subcard-title">Live Confusion Matrix (N = 11,055)</h3>
+          <div class="ts-cm-grid">
+            <div class="ts-cm-cell ts-cm-cell--tn">
+              <span class="ts-cm-num">6,028</span>
+              <span class="ts-cm-desc">True Negatives (Legitimate Correct)</span>
+            </div>
+            <div class="ts-cm-cell ts-cm-cell--fp">
+              <span class="ts-cm-num">129</span>
+              <span class="ts-cm-desc">False Positives (Legitimate Flagged)</span>
+            </div>
+            <div class="ts-cm-cell ts-cm-cell--fn">
+              <span class="ts-cm-num">126</span>
+              <span class="ts-cm-desc">False Negatives (Phishing Missed)</span>
+            </div>
+            <div class="ts-cm-cell ts-cm-cell--tp">
+              <span class="ts-cm-num">4,772</span>
+              <span class="ts-cm-desc">True Positives (Phishing Detected)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Score Interpretation -->
+      <section class="ts-card" id="scoring">
+        <h2 class="ts-card-title">
+          <span class="ts-step-num">4</span>
+          What a Score Does (and Does NOT) Mean
+        </h2>
+        <div class="ts-callouts">
+          <div class="ts-callout ts-callout--safe">
+            <h3 class="ts-callout-title">0 – 39: Low Risk</h3>
+            <p>
+              <strong>Meaning:</strong> No critical credential-harvesting indicators or known threat matches were detected.<br/>
+              <strong>Limitation:</strong> Does <em>not</em> guarantee the site is benign. If marked with
+              <em>"Limited Evidence"</em>, the site lacked forms or reputation data (e.g. video streams, downloads, or unindexed domains).
+            </p>
+          </div>
+          <div class="ts-callout ts-callout--warn">
+            <h3 class="ts-callout-title">40 – 69: Suspicious</h3>
+            <p>
+              <strong>Meaning:</strong> Concerning structural attributes detected (e.g., suspicious TLD with account keywords, excessive subdomains, or unencrypted credential prompts). Exercise caution.
+            </p>
+          </div>
+          <div class="ts-callout ts-callout--danger">
+            <h3 class="ts-callout-title">70 – 100: High Risk</h3>
+            <p>
+              <strong>Meaning:</strong> Strong credential-theft behavior detected (e.g., password forms submitting data to an external third-party domain) or verified blacklist match. Do not enter credentials.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Security & Privacy Guarantees -->
+      <section class="ts-card" id="privacy">
+        <h2 class="ts-card-title">
+          <span class="ts-step-num">5</span>
+          User Privacy &amp; Data Protection
+        </h2>
+        <ul class="ts-privacy-checklist">
+          <li><strong>Zero Credential Ingestion:</strong> The extension content script queries counts only (<code>forms.length</code>, <code>passwordInputs.length</code>). It never inspects <code>input.value</code> or text nodes.</li>
+          <li><strong>No Browsing History Stored:</strong> Scans run on-demand or at page load; URLs are not logged into persistent databases or sold to analytics brokers.</li>
+          <li><strong>SSRF Defense-in-Depth:</strong> Backend validates all hostnames against RFC 1918, RFC 5737, loopback (127.0.0.0/8), link-local, and cloud metadata (169.254.169.254) addresses.</li>
+          <li><strong>Offline Operation:</strong> Fully functional without external internet connectivity using local heuristics and bundled ML weights.</li>
+        </ul>
+      </section>
+
+      <!-- 6. Extension Download & Installation Guide -->
+      <section class="ts-card" id="download">
+        <h2 class="ts-card-title">
+          <span class="ts-step-num">6</span>
+          Download &amp; Install TrustShield Chrome Extension
+        </h2>
+        <p class="ts-card-desc">
+          Get real-time browser protection against zero-day phishing, typosquatting, credential exfiltration, and deceptive homoglyph attacks.
+        </p>
+
+        <!-- Download Banner -->
+        <div class="ts-download-box" style="background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-left: 4px solid var(--color-blue-500); border-radius: var(--radius-md); padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; gap: 16px; margin: 16px 0;">
+          <div class="ts-download-meta">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 6px;">TrustShield Manifest V3 Extension</h3>
+            <p style="font-size: 0.9rem; color: var(--color-slate-400); margin-bottom: 10px;">Official build for Google Chrome, Chromium, Brave, and Microsoft Edge.</p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="ts-meta-pill">Package: ZIP (Unpacked Extension)</span>
+              <span class="ts-meta-pill">Version: 1.0.0</span>
+              <span class="ts-meta-pill">Manifest: V3 Compliant</span>
+              <span class="ts-meta-pill">Zero Content Collection</span>
+            </div>
+          </div>
+          <div class="ts-download-action">
+            <a href="trustshield-extension.zip" download="trustshield-extension.zip" class="ts-btn-download-primary" id="mainDownloadBtn" style="white-space: nowrap;">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+              Download Extension (.ZIP)
+            </a>
+          </div>
+        </div>
+
+        <!-- How It Works Grid -->
+        <div class="ts-grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px;">
+          <div class="ts-subcard" style="background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 18px;">
+            <h3 class="ts-subcard-title">⚡ How Automatic Scanning Works</h3>
+            <p style="font-size: 0.9rem; color: var(--color-slate-300); margin-top: 6px;">
+              When navigating to a new eligible website, TrustShield's background service worker automatically analyzes the target using lightweight URL heuristics and DOM structure extraction.
+            </p>
+            <ul class="ts-list" style="margin-top: 10px; font-size: 0.88rem;">
+              <li><strong>Zero Interruption:</strong> Runs asynchronously without delaying page rendering.</li>
+              <li><strong>Intelligent Deduplication:</strong> Scans each distinct hostname once per session; skips ordinary path navigation and reloads.</li>
+              <li><strong>Bottom-Right Notification:</strong> A brief 5-second risk notification appears unobtrusively and auto-dismisses.</li>
+            </ul>
+          </div>
+          <div class="ts-subcard" style="background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 18px;">
+            <h3 class="ts-subcard-title">🎯 Explainable Risk Scoring</h3>
+            <p style="font-size: 0.9rem; color: var(--color-slate-300); margin-top: 6px;">
+              TrustShield never displays an opaque, uncalibrated score without evidence. Every verdict is backed by an auditable point attribution:
+            </p>
+            <ul class="ts-list" style="margin-top: 10px; font-size: 0.88rem;">
+              <li><strong>Signal Attribution:</strong> Exact numerical points assigned for each detected heuristic or DOM anomaly.</li>
+              <li><strong>Machine Learning Context:</strong> Calibrated Random Forest model output with documented benchmark limits.</li>
+              <li><strong>Honest Indicators:</strong> Absence of a blacklist match is explicitly noted as non-proof of safety.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Installation Instructions (Load Unpacked) -->
+        <div class="ts-install-steps" style="margin-top: 24px;">
+          <h3 class="ts-subcard-title" style="margin-bottom: 10px;">Step-by-Step Installation ("Load Unpacked" Developer Mode)</h3>
+          <p class="ts-card-desc" style="margin-bottom: 12px;">
+            <em>Distribution Notice:</em> TrustShield is open architecture security software currently distributed via clean unpacked bundle. Follow Chrome's developer loading workflow:
+          </p>
+          <ol class="ts-list" style="padding-left: 20px; font-size: 0.92rem; color: var(--color-slate-300); display: flex; flex-direction: column; gap: 8px;">
+            <li><strong>Download &amp; Extract:</strong> Download <code>trustshield-extension.zip</code> and extract the archive to a local folder.</li>
+            <li><strong>Open Extensions Page:</strong> In Chrome, open a new tab and navigate to <code>chrome://extensions</code> (or navigate via <em>Menu &rarr; Extensions &rarr; Manage Extensions</em>).</li>
+            <li><strong>Enable Developer Mode:</strong> Toggle on the <strong>Developer mode</strong> switch located in the upper-right corner.</li>
+            <li><strong>Click Load Unpacked:</strong> Click the <strong>Load unpacked</strong> button in the top-left toolbar.</li>
+            <li><strong>Select Folder:</strong> Select the extracted directory containing <code>manifest.json</code>.</li>
+            <li><strong>Done:</strong> Pin the TrustShield icon to your Chrome toolbar for one-click forensics and CERT dossier export!</li>
+          </ol>
+        </div>
+
+        <!-- Permissions & Compatibility Disclosure -->
+        <div class="ts-permissions-box" style="margin-top: 24px;">
+          <h3 class="ts-subcard-title" style="margin-bottom: 8px;">Extension Permissions &amp; Privacy Disclosures</h3>
+          <p class="ts-card-desc" style="margin-bottom: 12px;">
+            TrustShield strictly adheres to least-privilege principles. We explicitly disclose why each permission is required:
+          </p>
+          <div class="ts-table-wrapper">
+            <table class="ts-table">
+              <thead>
+                <tr>
+                  <th>Permission</th>
+                  <th>Technical Justification</th>
+                  <th>Privacy Impact</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>webNavigation</code></td>
+                  <td>Detects top-level domain navigation to initiate automatic security checks on new hostnames.</td>
+                  <td>No navigation history is logged, transmitted, or persisted.</td>
+                </tr>
+                <tr>
+                  <td><code>activeTab</code></td>
+                  <td>Inspects structural DOM attributes (e.g., cross-origin form actions) on the current webpage.</td>
+                  <td>Never reads input values, passwords, or text contents.</td>
+                </tr>
+                <tr>
+                  <td><code>storage</code></td>
+                  <td>Caches scan results in local browser memory to avoid redundant scans.</td>
+                  <td>Stored locally on your device; never sent to third parties.</td>
+                </tr>
+                <tr>
+                  <td><code>scripting</code></td>
+                  <td>Injects the isolated 5-second risk notification into a sandboxed Shadow DOM.</td>
+                  <td>Isolated from host webpage scripts and CSS.</td>
+                </tr>
+                <tr>
+                  <td><code>declarativeNetRequest</code></td>
+                  <td>Enables client-side threat blocking when critical phishing is detected.</td>
+                  <td>Operates entirely in browser memory.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Reporting False Positives / Negatives -->
+      <section class="ts-card" id="feedback">
+        <h2 class="ts-card-title">
+          <span class="ts-step-num">7</span>
+          Reporting Incorrect Classifications
+        </h2>
+        <p class="ts-card-desc">
+          Phishing detection is an evolving adversarial domain. If you encounter an institutional portal incorrectly flagged
+          (false positive) or a deceptive lure that was not detected (false negative):
+        </p>
+        <div class="ts-feedback-box">
+          <p>Please open an issue on the TrustShield repository with:</p>
+          <ol class="ts-list">
+            <li>The sanitized domain name (e.g., <code>example[.]edu</code>)</li>
+            <li>The risk score and signals displayed</li>
+            <li>The expected classification and reason</li>
+          </ol>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="ts-page-footer">
+      <div class="ts-container ts-footer-inner">
+        <span>TrustShield Adaptive Phishing Detection &amp; Website Trust Engine</span>
+        <span>Independent Research &amp; Open Architecture</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

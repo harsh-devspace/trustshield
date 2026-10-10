@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TrustShield</title>
+  <title>TrustShield — Cyber Forensics Workbench</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
@@ -11,183 +11,307 @@
     <!-- Header -->
     <header class="ts-header">
       <div class="ts-logo">
-        <svg class="ts-logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M16 2L4 7v9c0 7.18 5.16 13.9 12 15.93C22.84 29.9 28 23.18 28 16V7L16 2z" fill="url(#shieldGrad)" stroke="rgba(99,210,255,0.3)" stroke-width="0.5"/>
-          <path d="M11 16l3.5 3.5L21 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <defs>
-            <linearGradient id="shieldGrad" x1="16" y1="2" x2="16" y2="32" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#3b82f6"/>
-              <stop offset="100%" stop-color="#1d4ed8"/>
-            </linearGradient>
-          </defs>
+        <svg class="ts-logo-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M14 2L3 7v8c0 6.6 4.7 12.8 11 14.6 6.3-1.8 11-8 11-14.6V7L14 2z" fill="#141923" stroke="#ccff00" stroke-width="1.6"/>
+          <path d="M10 14l3 3 5-6" stroke="#ccff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="ts-logo-text">TrustShield</span>
+        <div class="ts-brand-text">
+          <span class="ts-logo-text">TRUSTSHIELD</span>
+          <span class="ts-sub-text">FORENSICS WORKBENCH</span>
+        </div>
       </div>
       <div class="ts-header-badge" id="headerBadge" aria-label="Status indicator"></div>
     </header>
 
-    <!-- Current Site Info -->
-    <section class="ts-site-info" aria-label="Current site">
-      <div class="ts-site-icon" id="siteIcon" aria-hidden="true">
-        <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.93 4.93a8 8 0 1010.14 10.14A8 8 0 004.93 4.93z" clip-rule="evenodd" opacity="0.3"/>
-          <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm-.75 11.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-1.5 0zm0-4v-4a.75.75 0 011.5 0v4a.75.75 0 01-1.5 0z"/>
-        </svg>
-      </div>
+    <!-- Workbench Tab Navigation -->
+    <nav class="ts-nav-tabs" aria-label="Workbench views">
+      <button class="ts-tab-btn active" id="tabAnalysisBtn" type="button">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3zm2 1v8h8V4H4zm2 2h4v1H6V6zm0 2h4v1H6V8z"/></svg>
+        Analysis &amp; Signals
+      </button>
+      <button class="ts-tab-btn" id="tabDossierBtn" type="button">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12"><path d="M4 2a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H4zm1 3h6v1H5V5zm0 3h6v1H5V8zm0 3h4v1H5v-1z"/></svg>
+        Dossier &amp; Settings
+      </button>
+    </nav>
+
+    <!-- Target Inspector Bar -->
+    <section class="ts-site-info" aria-label="Target domain inspection">
       <div class="ts-site-details">
+        <div class="ts-target-label">INSPECTED ORIGIN</div>
         <div class="ts-site-hostname" id="siteHostname">Loading…</div>
         <div class="ts-site-url" id="siteUrl" title=""></div>
       </div>
-      <div class="ts-https-badge" id="httpsBadge" aria-label="Connection security"></div>
+      <div class="ts-https-badge" id="httpsBadge" aria-label="Connection security">HTTPS</div>
     </section>
 
     <!-- Main Content Area -->
     <main class="ts-main" id="mainContent">
 
-      <!-- Idle State -->
-      <div class="ts-state ts-state--idle" id="stateIdle">
-        <div class="ts-idle-illustration" aria-hidden="true">
-          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="32" cy="32" r="28" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.2)" stroke-width="1"/>
-            <path d="M32 8L12 17v16c0 11.05 7.93 21.39 20 23.96C44.07 54.39 52 44.05 52 33V17L32 8z" fill="rgba(59,130,246,0.15)" stroke="rgba(99,180,255,0.4)" stroke-width="1"/>
-            <path d="M24 33l5.5 5.5L40 28" stroke="rgba(99,210,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <p class="ts-idle-text">Analyze this website for phishing indicators and security risks.</p>
-        <button class="ts-btn ts-btn--primary ts-btn--scan" id="scanBtn" aria-label="Scan current website for threats">
-          <svg class="ts-btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-          </svg>
-          Scan Website
-        </button>
-      </div>
-
-      <!-- Scanning State -->
-      <div class="ts-state ts-state--scanning" id="stateScanning" hidden>
-        <div class="ts-scan-animation" aria-label="Scanning in progress" role="status">
-          <div class="ts-scan-ring ts-scan-ring--outer"></div>
-          <div class="ts-scan-ring ts-scan-ring--middle"></div>
-          <div class="ts-scan-ring ts-scan-ring--inner"></div>
-          <div class="ts-scan-core" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3L4 6.5v7c0 4.8 3.44 9.29 8 10.38C16.56 22.79 20 18.3 20 13.5v-7L12 3z" fill="rgba(59,130,246,0.3)" stroke="#60a5fa" stroke-width="1.5"/>
-            </svg>
+      <!-- View 1: Analysis View -->
+      <div class="ts-view" id="viewAnalysis">
+        
+        <!-- Idle State -->
+        <div class="ts-state ts-state--idle" id="stateIdle">
+          <div class="ts-idle-card">
+            <div class="ts-crosshair-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="18" stroke="#252d3d" stroke-width="2"/>
+                <circle cx="24" cy="24" r="10" stroke="#ccff00" stroke-dasharray="3 3" stroke-width="1.5"/>
+                <line x1="24" y1="2" x2="24" y2="10" stroke="#ccff00" stroke-width="1.5"/>
+                <line x1="24" y1="38" x2="24" y2="46" stroke="#ccff00" stroke-width="1.5"/>
+                <line x1="2" y1="24" x2="10" y2="24" stroke="#ccff00" stroke-width="1.5"/>
+                <line x1="38" y1="24" x2="46" y2="24" stroke="#ccff00" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <p class="ts-idle-text">Ready to inspect URL structure, lexical entropy, DOM forms, and ML risk markers.</p>
           </div>
-        </div>
-        <p class="ts-scanning-label" aria-live="polite" id="scanningLabel">Analyzing URL structure…</p>
-        <div class="ts-scan-steps" id="scanSteps" aria-live="polite">
-          <div class="ts-scan-step" id="step1">
-            <div class="ts-step-dot ts-step-dot--active"></div>
-            <span>URL &amp; domain analysis</span>
-          </div>
-          <div class="ts-scan-step" id="step2">
-            <div class="ts-step-dot"></div>
-            <span>Page structure scan</span>
-          </div>
-          <div class="ts-scan-step" id="step3">
-            <div class="ts-step-dot"></div>
-            <span>ML prediction</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Results State -->
-      <div class="ts-state ts-state--results" id="stateResults" hidden>
-
-        <!-- Risk Score Gauge -->
-        <div class="ts-risk-gauge" id="riskGauge" aria-label="Risk score">
-          <svg class="ts-gauge-svg" viewBox="0 0 120 70" aria-hidden="true">
-            <!-- Background arc -->
-            <path d="M 10 65 A 55 55 0 0 1 110 65" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10" stroke-linecap="round"/>
-            <!-- Risk arc (filled dynamically) -->
-            <path class="ts-gauge-arc" id="gaugeArc" d="M 10 65 A 55 55 0 0 1 110 65" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round" stroke-dasharray="172.79" stroke-dashoffset="172.79"/>
-          </svg>
-          <div class="ts-gauge-center">
-            <div class="ts-risk-score" id="riskScore" aria-label="Risk score value">0</div>
-            <div class="ts-risk-label" id="riskLabel" aria-label="Risk classification">—</div>
-          </div>
-        </div>
-
-        <!-- Classification Badge -->
-        <div class="ts-classification" id="classificationBadge" role="status" aria-live="polite">
-          <div class="ts-class-icon" id="classIcon" aria-hidden="true"></div>
-          <div class="ts-class-info">
-            <div class="ts-class-title" id="classTitle">Analyzing…</div>
-            <div class="ts-class-subtitle" id="classSubtitle"></div>
-          </div>
-        </div>
-
-        <!-- Signals / Indicators -->
-        <section class="ts-signals-section" id="signalsSection" aria-label="Detected security indicators">
-          <h2 class="ts-section-title">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 3.75v3.5a.75.75 0 01-1.5 0v-3.5a.75.75 0 011.5 0zm-.75 6.5a.875.875 0 110-1.75.875.875 0 010 1.75z"/></svg>
-            Detected Indicators
-          </h2>
-          <div class="ts-signals-list" id="signalsList" role="list"></div>
-          <div class="ts-no-signals" id="noSignals" hidden>
-            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-            No significant threats detected
-          </div>
-        </section>
-
-        <!-- Recommendation -->
-        <section class="ts-recommendation" id="recommendationSection" aria-label="Recommendation">
-          <h2 class="ts-section-title">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zM6.25 9.75a.75.75 0 001.5 0v-3.5a.75.75 0 00-1.5 0v3.5zM8 5.5a.875.875 0 110-1.75A.875.875 0 018 5.5z"/></svg>
-            Recommendation
-          </h2>
-          <p class="ts-recommendation-text" id="recommendationText"></p>
-        </section>
-
-        <!-- Performance & Source Info -->
-        <div class="ts-meta-info" id="metaInfo">
-          <div class="ts-meta-item" id="metaModel">
-            <span class="ts-meta-label">Analysis</span>
-            <span class="ts-meta-value" id="metaModelValue">—</span>
-          </div>
-          <div class="ts-meta-item">
-            <span class="ts-meta-label">Scan time</span>
-            <span class="ts-meta-value" id="metaScanTime">—</span>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="ts-actions">
-          <button class="ts-btn ts-btn--secondary ts-btn--rescan" id="rescanBtn" aria-label="Rescan this website">
+          <button class="ts-btn ts-btn--primary ts-btn--scan" id="scanBtn" aria-label="Execute forensic scan">
             <svg class="ts-btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
             </svg>
-            Re-scan
+            Execute Forensic Scan
           </button>
         </div>
+
+        <!-- Scanning State -->
+        <div class="ts-state ts-state--scanning" id="stateScanning" hidden>
+          <div class="ts-scanning-box">
+            <div class="ts-radar-sweep" aria-hidden="true">
+              <div class="ts-sweep-line"></div>
+            </div>
+            <p class="ts-scanning-label" aria-live="polite" id="scanningLabel">Analyzing URL structure &amp; entropy…</p>
+            <div class="ts-scan-steps" id="scanSteps" aria-live="polite">
+              <div class="ts-scan-step" id="step1">
+                <div class="ts-step-dot ts-step-dot--active"></div>
+                <span>Lexical Entropy &amp; Homoglyphs</span>
+              </div>
+              <div class="ts-scan-step" id="step2">
+                <div class="ts-step-dot"></div>
+                <span>DOM Harvester &amp; Form Audit</span>
+              </div>
+              <div class="ts-scan-step" id="step3">
+                <div class="ts-step-dot"></div>
+                <span>ML Model Ingestion</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results State -->
+        <div class="ts-state ts-state--results" id="stateResults" hidden>
+
+          <!-- Threat Index Meter Card (Forensic Linear Gauge) -->
+          <div class="ts-threat-meter-card" id="riskGauge" aria-label="Forensic threat meter">
+            <div class="ts-meter-header">
+              <span class="ts-meter-title">FORENSIC THREAT INDEX</span>
+              <span class="ts-risk-label" id="riskLabel">—</span>
+            </div>
+            
+            <div class="ts-score-display">
+              <div class="ts-risk-score" id="riskScore" aria-label="Risk score value">0</div>
+              <div class="ts-score-unit">/ 100</div>
+            </div>
+
+            <!-- Precision Horizontal Linear Threat Meter -->
+            <div class="ts-meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="meterTrack">
+              <div class="ts-meter-fill" id="meterFill"></div>
+              <div class="ts-meter-marker" id="meterMarker"></div>
+            </div>
+            
+            <div class="ts-meter-scales">
+              <span>0 LOW</span>
+              <span>40 SUSPICIOUS</span>
+              <span>70 CRITICAL</span>
+              <span>100</span>
+            </div>
+          </div>
+
+          <!-- Forensic Telemetry Strip -->
+          <div class="ts-telemetry-strip" aria-label="Telemetry metrics">
+            <div class="ts-telemetry-cell">
+              <span class="ts-tel-key">ENTROPY</span>
+              <span class="ts-tel-val" id="telEntropy">—</span>
+            </div>
+            <div class="ts-telemetry-cell">
+              <span class="ts-tel-key">DOM FORMS</span>
+              <span class="ts-tel-val" id="telForms">—</span>
+            </div>
+            <div class="ts-telemetry-cell">
+              <span class="ts-tel-key">HOMOGLYPH</span>
+              <span class="ts-tel-val" id="telHomoglyph">CLEAN</span>
+            </div>
+            <div class="ts-telemetry-cell">
+              <span class="ts-tel-key">EVIDENCE</span>
+              <span class="ts-tel-val" id="telEvidence">—</span>
+            </div>
+          </div>
+
+          <!-- Classification Badge -->
+          <div class="ts-classification" id="classificationBadge" role="status" aria-live="polite">
+            <div class="ts-class-icon" id="classIcon" aria-hidden="true"></div>
+            <div class="ts-class-info">
+              <div class="ts-class-title" id="classTitle">Analyzing…</div>
+              <div class="ts-class-subtitle" id="classSubtitle"></div>
+            </div>
+          </div>
+
+          <!-- Strongest Risk Indicator Card -->
+          <div class="ts-strongest-indicator-card" id="strongestIndicatorCard">
+            <div class="ts-strongest-header">
+              <span class="ts-strongest-label">PRIMARY RISK SIGNAL</span>
+              <span class="ts-strongest-impact" id="strongestImpactBadge">—</span>
+            </div>
+            <p class="ts-strongest-text" id="strongestIndicatorText">Analyzing primary signal…</p>
+          </div>
+
+          <!-- Signals / Indicators List -->
+          <section class="ts-signals-section" id="signalsSection" aria-label="Detected security indicators">
+            <div class="ts-section-header">
+              <h2 class="ts-section-title">
+                <svg viewBox="0 0 16 16" fill="currentColor" width="13" height="13" aria-hidden="true"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 3.75v3.5a.75.75 0 01-1.5 0v-3.5a.75.75 0 011.5 0zm-.75 6.5a.875.875 0 110-1.75.875.875 0 010 1.75z"/></svg>
+                Detected Forensic Signals
+              </h2>
+              <span class="ts-signal-count" id="signalCountBadge">0 SIGNALS</span>
+            </div>
+            <div class="ts-signals-list" id="signalsList" role="list"></div>
+            <div class="ts-no-signals" id="noSignals" hidden>
+              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              No high-confidence phishing indicators detected
+            </div>
+          </section>
+
+          <!-- Recommendation Banner -->
+          <section class="ts-recommendation" id="recommendationSection" aria-label="Forensic recommendation">
+            <div class="ts-rec-header">
+              <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12" aria-hidden="true"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zM6.25 9.75a.75.75 0 001.5 0v-3.5a.75.75 0 00-1.5 0v3.5zM8 5.5a.875.875 0 110-1.75A.875.875 0 018 5.5z"/></svg>
+              FORENSIC DIRECTIVE
+            </div>
+            <p class="ts-recommendation-text" id="recommendationText"></p>
+          </section>
+
+          <!-- Performance & Source Info -->
+          <div class="ts-meta-info" id="metaInfo">
+            <div class="ts-meta-item" id="metaModel">
+              <span class="ts-meta-label">Engine</span>
+              <span class="ts-meta-value" id="metaModelValue">—</span>
+            </div>
+            <div class="ts-meta-item">
+              <span class="ts-meta-label">Latency</span>
+              <span class="ts-meta-value" id="metaScanTime">—</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="ts-actions">
+            <button class="ts-btn ts-btn--secondary" id="rescanBtn" aria-label="Re-analyze website">
+              <svg class="ts-btn-icon" viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+              </svg>
+              Re-Scan
+            </button>
+            <button class="ts-btn ts-btn--cert" id="exportCertBtn" aria-label="Export structured forensic CERT JSON">
+              <svg class="ts-btn-icon" viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+              Export CERT Dossier
+            </button>
+          </div>
+          <div class="ts-toast" id="certToast" hidden>Dossier copied to clipboard!</div>
+        </div>
+
+        <!-- Error State -->
+        <div class="ts-state ts-state--error" id="stateError" hidden>
+          <div class="ts-error-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="20" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
+              <path d="M24 14v12M24 30v2" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="ts-error-title" id="errorTitle">Inspection Aborted</p>
+          <p class="ts-error-desc" id="errorDesc">Unable to analyze this target.</p>
+          <button class="ts-btn ts-btn--secondary" id="retryBtn" aria-label="Retry scan">
+            Retry Inspection
+          </button>
+        </div>
+
       </div>
 
-      <!-- Error State -->
-      <div class="ts-state ts-state--error" id="stateError" hidden>
-        <div class="ts-error-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="24" cy="24" r="20" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
-            <path d="M24 14v12M24 30v2" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
+      <!-- View 2: Dossier & Settings View -->
+      <div class="ts-view" id="viewDossier" hidden>
+        
+        <div class="ts-dossier-card">
+          <div class="ts-dossier-header">TECHNICAL SCORING ATTRIBUTION</div>
+          <div class="ts-attr-grid">
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">Heuristic Contribution</span>
+              <span class="ts-attr-val" id="attrHeuristic">—</span>
+            </div>
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">ML Phishing Contribution (max 60)</span>
+              <span class="ts-attr-val" id="attrMl">—</span>
+            </div>
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">ML Model Probability</span>
+              <span class="ts-attr-val" id="attrMlProb">—</span>
+            </div>
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">DOM Credential Harvester Bonus</span>
+              <span class="ts-attr-val" id="attrDom">—</span>
+            </div>
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">Threat Intel Feed Match</span>
+              <span class="ts-attr-val" id="attrThreatIntel">—</span>
+            </div>
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">Audit Checks Completed</span>
+              <span class="ts-attr-val" id="attrChecksCount">—</span>
+            </div>
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">Unavailable / Skipped Checks</span>
+              <span class="ts-attr-val" id="attrUnavailableCount">—</span>
+            </div>
+            <div class="ts-attr-row">
+              <span class="ts-attr-label">Evidence Adequacy Level</span>
+              <span class="ts-attr-val" id="attrEvidence">—</span>
+            </div>
+          </div>
+          <p class="ts-dossier-note" id="attrConfidenceNote">Execute a scan on the active page to generate a live technical breakdown.</p>
         </div>
-        <p class="ts-error-title" id="errorTitle">Scan Failed</p>
-        <p class="ts-error-desc" id="errorDesc">Unable to analyze this page.</p>
-        <button class="ts-btn ts-btn--secondary" id="retryBtn" aria-label="Retry scan">
-          Retry
-        </button>
+
+        <div class="ts-dossier-card">
+          <div class="ts-dossier-header">INCIDENT DOSSIER JSON</div>
+          <pre class="ts-json-preview" id="jsonPreviewBox">// No incident report generated yet. Run a scan to export.</pre>
+          <button class="ts-btn ts-btn--secondary ts-btn--small" id="copyJsonBtn" type="button">
+            Copy Dossier JSON
+          </button>
+        </div>
+
+        <div class="ts-dossier-card">
+          <div class="ts-dossier-header">SYSTEM &amp; PRIVACY ARCHITECTURE</div>
+          <ul class="ts-privacy-list">
+            <li><strong>Engine:</strong> Random Forest Classifier (11 features) + Deterministic Heuristics</li>
+            <li><strong>Privacy Guarantee:</strong> Zero form values or passwords logged or captured</li>
+            <li><strong>Telemetry:</strong> Local processing only — no continuous browsing history tracked</li>
+          </ul>
+          <div class="ts-dossier-footer-links">
+            <a href="trust.html" target="_blank" class="ts-text-link">Review Full Methodology &amp; Benchmarks &rarr;</a>
+          </div>
+        </div>
+
       </div>
 
     </main>
 
     <!-- Footer -->
     <footer class="ts-footer">
-      <div class="ts-privacy-note">
-        <svg viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M7 1L2 3.25v4.5c0 3.11 2.19 6.02 5 6.73C9.81 13.77 12 10.86 12 7.75v-4.5L7 1z"/></svg>
-        Local analysis only — no browsing history sent
+      <div class="ts-footer-badge">
+        <span class="ts-status-dot"></span>
+        <span>PROTECTED RUNTIME</span>
       </div>
-      <div class="ts-footer-right" id="footerRight">
-        <a href="trust.html" target="_blank" class="ts-methodology-link" id="methodologyLink">Methodology</a>
-        <span class="ts-version">v1.0.0</span>
+      <div class="ts-footer-right">
+        <a href="trust.html" target="_blank" class="ts-methodology-link" id="methodologyLink">Docs</a>
+        <span class="ts-version">v1.2.0</span>
       </div>
     </footer>
   </div>

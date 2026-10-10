@@ -8,9 +8,11 @@ Endpoints:
 """
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 import time
 import logging
 
@@ -192,3 +194,63 @@ async def methodology():
         },
         "privacy_guarantee": "Zero collection of user passwords, form inputs, cookies, tokens, or browsing history.",
     }
+
+
+# ─── Extension Distribution & Website Endpoints ──────────────────────────────
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+EXTENSION_DIR = BASE_DIR / "extension"
+ZIP_PATH = BASE_DIR / "trustshield-extension.zip"
+
+
+@app.get(
+    "/download/extension",
+    summary="Download TrustShield Chrome Extension (.ZIP)",
+    tags=["Distribution"],
+)
+@app.get(
+    "/trustshield-extension.zip",
+    summary="Download TrustShield Chrome Extension (.ZIP)",
+    tags=["Distribution"],
+)
+async def download_extension():
+    """Serves the complete distributable TrustShield Chrome Manifest V3 extension package."""
+    if not ZIP_PATH.exists():
+        # Fallback to extension directory zip if available
+        alt_zip = EXTENSION_DIR / "trustshield-extension.zip"
+        if alt_zip.exists():
+            return FileResponse(
+                path=alt_zip,
+                filename="trustshield-extension.zip",
+                media_type="application/zip",
+                headers={"Content-Disposition": "attachment; filename=trustshield-extension.zip"},
+            )
+        raise HTTPException(
+            status_code=404,
+            detail="Extension ZIP package not found. Run scripts/package_extension.py first.",
+        )
+
+    return FileResponse(
+        path=ZIP_PATH,
+        filename="trustshield-extension.zip",
+        media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=trustshield-extension.zip"},
+    )
+
+
+@app.get(
+    "/trust",
+    summary="Interactive TrustShield Detection & Trust Methodology Website",
+    tags=["Transparency"],
+)
+async def trust_page():
+    """Serves the TrustShield trust, transparency, and installation guide webpage."""
+    trust_html = EXTENSION_DIR / "trust.html"
+    if not trust_html.exists():
+        raise HTTPException(status_code=404, detail="trust.html not found.")
+    return FileResponse(path=trust_html, media_type="text/html")
+
+
+# Mount static assets for web viewing of trust methodology documentation
+if EXTENSION_DIR.exists():
+    app.mount("/static-extension", StaticFiles(directory=str(EXTENSION_DIR)), name="static_extension")
+
