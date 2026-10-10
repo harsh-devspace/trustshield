@@ -6,6 +6,7 @@
 [![Python](https://img.shields.io/badge/python-3.12-3b82f6?style=flat-square)](#requirements)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143-009688?style=flat-square)](#backend)
 [![Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-ef4444?style=flat-square)](#extension)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fharsh-devspace%2Ftrustshield)
 [![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)](#license)
 
 ---

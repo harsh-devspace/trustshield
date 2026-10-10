@@ -53,3 +53,5 @@ extension/dist/
 
 # OS
 Desktop.ini
+
+.vercel
