@@ -412,8 +412,9 @@ async function runScan(url, tabId) {
     risk_score: finalScore,
     classification,
     signals: allSignals,
-    recommendation,
+    recommendation: apiResult?.recommendation || recommendation,
     model_available: modelAvailable,
+    score_breakdown: apiResult?.score_breakdown || null,
     api_error: apiError,
     performance: {
       total_scan_ms: totalScanMs,

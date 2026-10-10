@@ -137,6 +137,23 @@ def merge_features(
     """
     merged = dict(server_features)
 
+    # Derived encodings expected by the trained ML model schema
+    url_len = server_features.get("url_length", 0) or 0
+    if url_len > 75:
+        merged["url_length_encoded"] = 1
+    elif url_len >= 54:
+        merged["url_length_encoded"] = 0
+    else:
+        merged["url_length_encoded"] = -1
+
+    subdomains = server_features.get("subdomain_count", 0) or 0
+    if subdomains > 2:
+        merged["subdomain_count_encoded"] = 1
+    elif subdomains == 2:
+        merged["subdomain_count_encoded"] = 0
+    else:
+        merged["subdomain_count_encoded"] = -1
+
     # DOM features
     if dom_features:
         merged.update({
@@ -145,14 +162,16 @@ def merge_features(
             "external_form_count":  dom_features.get("external_form_count", 0) or 0,
             "has_external_form":    dom_features.get("has_external_form", 0) or 0,
             "external_iframe_count": dom_features.get("external_iframe_count", 0) or 0,
+            "has_favicon":          dom_features.get("has_favicon", 0) or 0,
         })
     else:
         merged.update({
-            "has_password_input": 0,
-            "form_count": 0,
-            "external_form_count": 0,
-            "has_external_form": 0,
+            "has_password_input":   0,
+            "form_count":           0,
+            "external_form_count":  0,
+            "has_external_form":    0,
             "external_iframe_count": 0,
+            "has_favicon":          0,
         })
 
     return merged

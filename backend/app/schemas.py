@@ -145,6 +145,22 @@ class Signal(BaseModel):
     source: Literal["heuristic", "ml", "dom", "threat_intel"] = "heuristic"
 
 
+class ScoreBreakdown(BaseModel):
+    """Detailed attribution for the composite risk score."""
+    heuristic_score: int = Field(..., description="Raw points from rule-based heuristic checks")
+    ml_contribution: int = Field(..., description="Points contributed by ML phishing probability (up to 60)")
+    dom_bonus: int = Field(..., description="Points contributed by structural DOM signals")
+    raw_blended_score: float = Field(..., description="Unrounded blended score before clamping")
+    evidence_level: Literal["limited", "moderate", "strong"] = Field(
+        ...,
+        description="Assessment confidence based on indicator density and signal availability"
+    )
+    confidence_note: str = Field(
+        ...,
+        description="Notice explaining evidence limits (e.g. low score does not guarantee safe software downloads)"
+    )
+
+
 class AnalyzeResponse(BaseModel):
     """Response body for POST /analyze"""
     url_host: str
@@ -153,6 +169,7 @@ class AnalyzeResponse(BaseModel):
     signals: List[Signal]
     recommendation: str
     model_available: bool
+    score_breakdown: Optional[ScoreBreakdown] = None
     api_version: str = "1.0.0"
 
 

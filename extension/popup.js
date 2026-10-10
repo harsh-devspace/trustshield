@@ -215,7 +215,11 @@ function renderResults(result) {
   ui.classIcon.className = `ts-class-icon ${cfg.iconClass}`;
   ui.classIcon.innerHTML = cfg.icon;
   ui.classTitle.textContent = cfg.title;
-  ui.classSubtitle.textContent = cfg.subtitle;
+  if (classification === 'low_risk' && result.score_breakdown?.evidence_level === 'limited') {
+    ui.classSubtitle.textContent = 'Limited evidence • Verify before downloading';
+  } else {
+    ui.classSubtitle.textContent = cfg.subtitle;
+  }
 
   // Header badge
   setHeaderBadge(cfg.headerBadgeClass);

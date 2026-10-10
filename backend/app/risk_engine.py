@@ -23,7 +23,7 @@ import re
 from typing import Dict, Any, List, Optional
 from urllib.parse import urlparse
 
-from .schemas import AnalyzeResponse, Signal
+from .schemas import AnalyzeResponse, Signal, ScoreBreakdown
 from .feature_extractor import extract_url_features, merge_features
 from .model_service import ModelService
 
@@ -175,8 +175,35 @@ class RiskEngine:
         severity_order = {"high": 0, "medium": 1, "low": 2}
         all_signals.sort(key=lambda s: severity_order.get(s.severity, 2))
 
-        # ─── Step 8: Recommendation ───────────────────────────────────────────
-        recommendation = self._build_recommendation(classification, all_signals)
+        # ─── Step 8: Evidence level & Explainability breakdown ────────────────
+        has_high_sev = any(s.severity == "high" for s in all_signals)
+        has_med_sev = any(s.severity == "medium" for s in all_signals)
+        ml_prob = ml_result["phishing_probability"] if ml_result else 0.0
+
+        if has_high_sev or ml_prob >= 0.70:
+            evidence_level = "strong"
+            confidence_note = "High-confidence structural threat indicators were detected."
+        elif has_med_sev or ml_prob >= 0.40 or len(all_signals) >= 2:
+            evidence_level = "moderate"
+            confidence_note = "Moderate evidence available based on detected structural signals and model evaluation."
+        else:
+            evidence_level = "limited"
+            confidence_note = (
+                "Assessment is based on limited structural indicators. No credential-harvesting forms were detected; "
+                "note that this score does not certify the page safe from deceptive downloads, malvertising, or social engineering."
+            )
+
+        score_breakdown = ScoreBreakdown(
+            heuristic_score=heuristic_score,
+            ml_contribution=ml_score_contribution,
+            dom_bonus=dom_score_bonus,
+            raw_blended_score=round(float(raw_score), 2),
+            evidence_level=evidence_level,
+            confidence_note=confidence_note,
+        )
+
+        # ─── Step 9: Recommendation ───────────────────────────────────────────
+        recommendation = self._build_recommendation(classification, all_signals, evidence_level)
 
         return AnalyzeResponse(
             url_host=hostname,
@@ -185,6 +212,7 @@ class RiskEngine:
             signals=all_signals,
             recommendation=recommendation,
             model_available=model_available,
+            score_breakdown=score_breakdown,
         )
 
     def _heuristic_analysis(
@@ -318,8 +346,10 @@ class RiskEngine:
 
         return signals, min(score, 40)
 
-    def _build_recommendation(self, classification: str, signals: List[Signal]) -> str:
-        """Build a plain-English recommendation based on classification."""
+    def _build_recommendation(
+        self, classification: str, signals: List[Signal], evidence_level: str = "moderate"
+    ) -> str:
+        """Build a plain-English recommendation based on classification and evidence adequacy."""
         if classification == "high_risk":
             return (
                 "Do not enter passwords, payment information, or any personal data on this site. "
@@ -333,7 +363,12 @@ class RiskEngine:
                 "and search for reviews) before entering any sensitive information."
             )
         else:
-            if any(s.severity in ("high", "medium") for s in signals):
+            if evidence_level == "limited":
+                return (
+                    "No credential-harvesting indicators detected, but structural evidence is limited. "
+                    "Exercise caution if prompted to download files, install software, or grant permissions."
+                )
+            elif any(s.severity in ("high", "medium") for s in signals):
                 return (
                     "No critical threats were detected, but some indicators were noted. "
                     "Review the detected signals and verify the site before sharing sensitive data."
