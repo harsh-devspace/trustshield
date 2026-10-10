@@ -190,6 +190,16 @@ function extractUrlFeatures(url) {
   }
 }
 
+async function getApiBaseUrl() {
+  try {
+    const data = await chrome.storage.local.get('api_base_url');
+    if (data && data.api_base_url) {
+      return data.api_base_url.replace(/\/+$/, '');
+    }
+  } catch (_) {}
+  return CONFIG.API_BASE_URL;
+}
+
 /**
  * Call the backend API for ML-based risk analysis.
  * Sends only derived URL features — no raw HTML, cookies, or user data.
@@ -199,7 +209,8 @@ async function callBackendApi(url, urlFeatures, domFeatures) {
   const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT_MS);
 
   try {
-    const response = await fetch(`${CONFIG.API_BASE_URL}/analyze`, {
+    const baseUrl = await getApiBaseUrl();
+    const response = await fetch(`${baseUrl}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
