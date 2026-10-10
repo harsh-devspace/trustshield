@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+trustshield_env/
+.env
+
+# Model artifacts (large binary files)
+# Keep the model artifacts in the repo for demo purposes
+# Uncomment below to exclude them:
+# *.joblib
+# backend/ml/model_artifacts/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Node (if dashboard is added)
+node_modules/
+dist/
+.next/
+
+# Extension build
+extension/dist/
+
+# OS
+Desktop.ini

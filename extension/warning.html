@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrustShield — Security Warning</title>
+  <link rel="stylesheet" href="warning.css" />
+</head>
+<body>
+  <div class="ts-warning-page" id="warningPage">
+    <!-- Animated background -->
+    <div class="ts-bg-grid" aria-hidden="true"></div>
+    <div class="ts-bg-glow" aria-hidden="true"></div>
+
+    <main class="ts-warning-container" role="main">
+      <!-- Shield Icon with warning animation -->
+      <div class="ts-warning-shield" aria-hidden="true">
+        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="36" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.2)" stroke-width="1"/>
+          <path d="M40 10L16 21v18c0 13.5 10.3 26.2 24 29.4C53.7 65.2 64 52.5 64 39V21L40 10z" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.5)" stroke-width="1.5" class="shield-pulse"/>
+          <path d="M40 28v14M40 46v3" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <div class="ts-warning-badge" aria-hidden="true">!</div>
+      </div>
+
+      <!-- TrustShield branding -->
+      <div class="ts-brand">
+        <span class="ts-brand-name">TrustShield</span>
+        <span class="ts-brand-label">Security Warning</span>
+      </div>
+
+      <!-- Warning headline -->
+      <h1 class="ts-warning-headline">
+        Potential Phishing Site Detected
+      </h1>
+
+      <!-- Destination info -->
+      <div class="ts-destination-card" id="destinationCard">
+        <div class="ts-dest-label">You are about to visit:</div>
+        <div class="ts-dest-url" id="destHostname">unknown-site.example</div>
+        <div class="ts-dest-full" id="destFullUrl"></div>
+      </div>
+
+      <!-- Risk score display -->
+      <div class="ts-risk-display">
+        <div class="ts-risk-meter">
+          <div class="ts-risk-bar" id="riskBar"></div>
+        </div>
+        <div class="ts-risk-info">
+          <span class="ts-risk-num" id="riskScoreDisplay">—</span>
+          <span class="ts-risk-text">Risk Score</span>
+          <span class="ts-risk-class" id="riskClassDisplay">HIGH RISK</span>
+        </div>
+      </div>
+
+      <!-- Why this warning -->
+      <section class="ts-why-section" aria-label="Reasons for this warning">
+        <h2 class="ts-why-title">Why you're seeing this warning:</h2>
+        <ul class="ts-signals-list" id="warningSignalsList" role="list">
+          <!-- Populated by warning.js -->
+        </ul>
+      </section>
+
+      <!-- Actions -->
+      <div class="ts-warning-actions">
+        <button class="ts-btn ts-btn--safe" id="goBackBtn" autofocus>
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+          </svg>
+          Go Back to Safety
+        </button>
+        <button class="ts-btn ts-btn--danger" id="proceedBtn">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+          Proceed Anyway (Not Recommended)
+        </button>
+      </div>
+
+      <!-- Disclaimer -->
+      <p class="ts-disclaimer">
+        TrustShield uses machine learning and heuristic analysis to detect potential threats. 
+        This is not a guarantee — always verify a website independently before entering sensitive information.
+        Analysis is performed locally; <strong>no browsing history is transmitted</strong>.
+      </p>
+    </main>
+  </div>
+  <script src="warning.js"></script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+/* ─── TrustShield Warning/Interstitial Page CSS ────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --color-bg-base:    #0a0e17;
+  --color-bg-surface: #111827;
+  --color-red-400:    #f87171;
+  --color-red-500:    #ef4444;
+  --color-red-600:    #dc2626;
+  --color-green-400:  #4ade80;
+  --color-green-500:  #22c55e;
+  --color-slate-300:  #cbd5e1;
+  --color-slate-400:  #94a3b8;
+  --color-slate-500:  #64748b;
+  --color-border:     rgba(239,68,68,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--color-bg-base);
+  color: var(--color-slate-300);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Background grid */
+.ts-bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(239,68,68,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(239,68,68,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ts-bg-glow {
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(239,68,68,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ts-warning-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.ts-warning-container {
+  max-width: 540px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: fadeUp 0.4s ease forwards;
+}
+
+/* Shield icon */
+.ts-warning-shield {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.ts-warning-shield svg { width: 80px; height: 80px; }
+
+.shield-pulse {
+  animation: shieldPulse 2s ease-in-out infinite;
+}
+
+.ts-warning-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 26px;
+  height: 26px;
+  background: var(--color-red-500);
+  border: 2px solid var(--color-bg-base);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+}
+
+/* Brand */
+.ts-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ts-brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+.ts-brand-label {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  background: rgba(239,68,68,0.15);
+  color: var(--color-red-400);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Headline */
+.ts-warning-headline {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+/* Destination card */
+.ts-destination-card {
+  width: 100%;
+  background: rgba(239,68,68,0.05);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.ts-dest-label {
+  font-size: 11px;
+  color: var(--color-slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.ts-dest-url {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-red-400);
+  word-break: break-all;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.ts-dest-full {
+  font-size: 11px;
+  color: var(--color-slate-500);
+  margin-top: 4px;
+  word-break: break-all;
+  font-family: monospace;
+}
+
+/* Risk display */
+.ts-risk-display {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ts-risk-meter {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.ts-risk-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  border-radius: 999px;
+  width: 0%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+}
+
+.ts-risk-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ts-risk-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-red-400);
+  font-variant-numeric: tabular-nums;
+}
+
+.ts-risk-text {
+  font-size: 11px;
+  color: var(--color-slate-500);
+  display: none;
+}
+
+.ts-risk-class {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: rgba(239,68,68,0.15);
+  color: var(--color-red-400);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Why section */
+.ts-why-section {
+  width: 100%;
+}
+
+.ts-why-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.ts-signals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.ts-signal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(239,68,68,0.04);
+  border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 8px;
+}
+
+.ts-signal-item--medium {
+  background: rgba(245,158,11,0.04);
+  border-color: rgba(245,158,11,0.15);
+}
+
+.ts-signal-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--color-red-400);
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.ts-signal-dot--medium { background: #f59e0b; }
+
+.ts-signal-content { flex: 1; }
+
+.ts-signal-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.ts-signal-desc {
+  font-size: 12px;
+  color: var(--color-slate-400);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* Actions */
+.ts-warning-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.ts-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  text-decoration: none;
+  width: 100%;
+}
+
+.ts-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.ts-btn:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+
+.ts-btn--safe {
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(34,197,94,0.3);
+}
+
+.ts-btn--safe:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(34,197,94,0.4);
+}
+
+.ts-btn--danger {
+  background: rgba(239,68,68,0.1);
+  color: var(--color-red-400);
+  border: 1px solid rgba(239,68,68,0.3);
+}
+
+.ts-btn--danger:hover {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.5);
+}
+
+/* Disclaimer */
+.ts-disclaimer {
+  font-size: 11px;
+  color: var(--color-slate-500);
+  text-align: center;
+  line-height: 1.6;
+  max-width: 460px;
+}
+
+.ts-disclaimer strong { color: var(--color-slate-400); }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shieldPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+@keyframes badgePop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}

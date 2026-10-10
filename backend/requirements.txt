@@ -1,0 +1,26 @@
+# TrustShield — Python dependencies
+# Install with: pip install -r requirements.txt
+
+# Web framework
+fastapi==0.143.0
+uvicorn==0.54.0
+pydantic==2.14.0
+python-multipart==0.0.32
+
+# Machine learning
+scikit-learn==1.9.1
+numpy==2.5.3
+pandas==3.0.6
+joblib==1.6.0
+
+# HTTP client (for future threat intel integrations)
+httpx==0.28.1
+requests==2.34.2
+
+# Testing
+pytest==9.1.1
+httpx==0.28.1  # TestClient dependency
+
+# Dev tools (optional)
+# black==24.x
+# ruff==0.x

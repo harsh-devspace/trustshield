@@ -1,0 +1,34 @@
+{
+  "feature_names": [
+    "has_ip_host",
+    "has_at_symbol",
+    "has_double_slash",
+    "dash_in_hostname",
+    "is_https",
+    "has_port",
+    "has_favicon",
+    "has_external_form",
+    "external_iframe_count",
+    "url_length_encoded",
+    "subdomain_count_encoded"
+  ],
+  "n_features": 11,
+  "feature_types": {
+    "has_ip_host": "numeric",
+    "has_at_symbol": "numeric",
+    "has_double_slash": "numeric",
+    "dash_in_hostname": "numeric",
+    "is_https": "numeric",
+    "has_port": "numeric",
+    "has_favicon": "numeric",
+    "has_external_form": "numeric",
+    "external_iframe_count": "numeric",
+    "url_length_encoded": "numeric",
+    "subdomain_count_encoded": "numeric"
+  },
+  "label_encoding": {
+    "0": "legitimate",
+    "1": "phishing"
+  },
+  "version": "1.0.0"
+}
