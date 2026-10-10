@@ -42,7 +42,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["warning.html", "warning.css", "warning.js", "assets/*"],
+      "resources": ["warning.html", "warning.css", "warning.js", "trust.html", "trust.css", "assets/*"],
       "matches": ["<all_urls>"]
     }
   ],

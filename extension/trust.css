@@ -1,0 +1,390 @@
+/* ─── TrustShield Trust & Methodology CSS ─────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --color-bg-base:        #0a0e14;
+  --color-bg-surface:     #131822;
+  --color-bg-elevated:    #1c2331;
+  --color-bg-hover:       #242d3e;
+  --color-border:         rgba(99, 130, 180, 0.14);
+  --color-border-strong:  rgba(99, 130, 180, 0.28);
+
+  --color-blue-400:       #60a5fa;
+  --color-blue-500:       #3b82f6;
+  --color-blue-600:       #2563eb;
+  --color-green-400:      #4ade80;
+  --color-green-500:      #22c55e;
+  --color-amber-400:      #fbbf24;
+  --color-amber-500:      #f59e0b;
+  --color-red-400:        #f87171;
+  --color-red-500:        #ef4444;
+
+  --color-slate-200:      #e2e8f0;
+  --color-slate-300:      #cbd5e1;
+  --color-slate-400:      #94a3b8;
+  --color-slate-500:      #64748b;
+
+  --font-sans:            'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:            'JetBrains Mono', monospace;
+
+  --radius-md:            10px;
+  --radius-lg:            14px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-slate-200);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ts-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header */
+.ts-page-header {
+  background: rgba(19, 24, 34, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 14px 0;
+}
+
+.ts-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ts-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ts-brand-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.ts-brand-name {
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.ts-badge-transparency {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--color-blue-400);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ts-btn-back {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-slate-300);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+}
+
+.ts-btn-back:hover {
+  background: var(--color-bg-hover);
+  color: #fff;
+}
+
+/* Hero */
+.ts-hero {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--color-border);
+  background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+}
+
+.ts-hero-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.ts-hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--color-slate-400);
+  max-width: 720px;
+  margin-bottom: 20px;
+}
+
+.ts-hero-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ts-meta-pill {
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-slate-300);
+}
+
+/* Content cards */
+.ts-main-content {
+  padding: 36px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.ts-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.ts-card-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ts-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--color-blue-600);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.ts-card-desc {
+  color: var(--color-slate-400);
+  margin-bottom: 18px;
+  font-size: 0.95rem;
+}
+
+.ts-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.ts-subcard {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.ts-subcard-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-blue-400);
+  margin-bottom: 10px;
+}
+
+.ts-list {
+  padding-left: 20px;
+  color: var(--color-slate-300);
+  font-size: 0.88rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Tables */
+.ts-table-wrapper {
+  overflow-x: auto;
+}
+
+.ts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ts-table th, .ts-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ts-table th {
+  background: var(--color-bg-elevated);
+  color: var(--color-slate-400);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Stats */
+.ts-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.ts-stat-card {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.ts-stat-value {
+  display: block;
+  font-size: 1.55rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--color-green-400);
+  margin-bottom: 4px;
+}
+
+.ts-stat-label {
+  font-size: 0.75rem;
+  color: var(--color-slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Confusion Matrix */
+.ts-cm-box {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.ts-cm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ts-cm-cell {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.ts-cm-cell--tn { background: rgba(34, 197, 94, 0.08); border-color: rgba(34, 197, 94, 0.25); }
+.ts-cm-cell--fp { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.25); }
+.ts-cm-cell--fn { background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.25); }
+.ts-cm-cell--tp { background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.25); }
+
+.ts-cm-num {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #fff;
+}
+
+.ts-cm-desc {
+  font-size: 0.8rem;
+  color: var(--color-slate-400);
+}
+
+/* Callouts */
+.ts-callouts {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ts-callout {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  border-left: 4px solid;
+}
+
+.ts-callout--safe   { background: rgba(34, 197, 94, 0.06); border-color: var(--color-green-500); }
+.ts-callout--warn   { background: rgba(245, 158, 11, 0.06); border-color: var(--color-amber-500); }
+.ts-callout--danger { background: rgba(239, 68, 68, 0.06); border-color: var(--color-red-500); }
+
+.ts-callout-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.ts-privacy-checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ts-privacy-checklist li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 0.92rem;
+  color: var(--color-slate-300);
+}
+
+.ts-privacy-checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-green-400);
+  font-weight: 700;
+}
+
+.ts-feedback-box {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.ts-page-footer {
+  border-top: 1px solid var(--color-border);
+  padding: 24px 0;
+  background: var(--color-bg-surface);
+  font-size: 0.82rem;
+  color: var(--color-slate-500);
+}
+
+.ts-footer-inner {
+  display: flex;
+  justify-content: space-between;
+}

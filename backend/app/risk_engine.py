@@ -56,8 +56,9 @@ class RiskEngine:
     Orchestrates the complete risk analysis pipeline.
     """
 
-    def __init__(self, model_service: ModelService):
+    def __init__(self, model_service: ModelService, threat_intel: Optional[Any] = None):
         self.model_service = model_service
+        self.threat_intel = threat_intel
 
     def analyze(
         self,
@@ -107,6 +108,19 @@ class RiskEngine:
         # ─── Step 3: DOM signal analysis ──────────────────────────────────────
         dom_signals, dom_score_bonus = self._dom_analysis(dom_feat_dict or {})
 
+        # ─── Step 3.5: Optional Threat Intelligence Lookup ────────────────────
+        ti_signals = []
+        if self.threat_intel and self.threat_intel.is_configured():
+            ti_result = self.threat_intel.check_url(url)
+            if ti_result.get("is_threat"):
+                threat_type = ti_result.get("threat_type", "MALICIOUS")
+                ti_signals.append(Signal(
+                    code="threat_intel_confirmed_match",
+                    severity="high",
+                    description=f"Confirmed threat match in {ti_result.get('provider')}: {ti_result.get('details')}",
+                    source="threat_intel",
+                ))
+
         # ─── Step 4: ML prediction ────────────────────────────────────────────
         ml_signals = []
         ml_score_contribution = 0
@@ -137,11 +151,15 @@ class RiskEngine:
             # Low ML score alone does not produce a signal (avoids false reassurance)
 
         # ─── Step 5: Combine scores ────────────────────────────────────────────
-        if model_available:
+        if ti_signals:
+            # Confirmed blacklist / threat feed match overrides local score
+            raw_score = 95
+        elif model_available:
             # Weighted combination: heuristic has 40% weight, ML has 60%
-            # But high-confidence heuristics can dominate
-            has_strong_heuristic = any(
-                s.severity == "high" for s in heuristic_signals + dom_signals
+            # High-confidence heuristics or accumulated suspicious signals dominate
+            has_strong_heuristic = (
+                any(s.severity == "high" for s in heuristic_signals + dom_signals) or
+                (heuristic_score + dom_score_bonus) >= THRESHOLDS["suspicious"]
             )
 
             if has_strong_heuristic:
@@ -171,7 +189,7 @@ class RiskEngine:
 
         # ─── Step 7: Build signal list ────────────────────────────────────────
         # Sort: high → medium → low
-        all_signals = heuristic_signals + dom_signals + ml_signals
+        all_signals = ti_signals + heuristic_signals + dom_signals + ml_signals
         severity_order = {"high": 0, "medium": 1, "low": 2}
         all_signals.sort(key=lambda s: severity_order.get(s.severity, 2))
 
@@ -305,6 +323,16 @@ class RiskEngine:
                 source="heuristic",
             ))
             score += HEURISTIC_WEIGHTS["ip_with_keywords"]
+
+        # Compound: Suspicious TLD + credential/brand keywords
+        if features.get("has_suspicious_tld") and features.get("has_suspicious_keywords"):
+            signals.append(Signal(
+                code="tld_with_keywords",
+                severity="medium",
+                description="The URL combines a high-risk domain extension with credential or account keywords, a pattern frequently observed in phishing impersonation.",
+                source="heuristic",
+            ))
+            score += 15
 
         return signals, min(score, 100)
 

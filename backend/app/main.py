@@ -17,6 +17,7 @@ import logging
 from .schemas import AnalyzeRequest, AnalyzeResponse, HealthResponse, ModelInfoResponse
 from .risk_engine import RiskEngine
 from .model_service import ModelService
+from .threat_intel import ThreatIntelService
 
 # ─── Logging ─────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -28,7 +29,8 @@ logger = logging.getLogger("trustshield")
 # ─── Service instances ────────────────────────────────────────────────────────
 # Instantiated before the app so they are accessible to routes and tests alike.
 model_service = ModelService()
-risk_engine = RiskEngine(model_service=model_service)
+threat_intel_service = ThreatIntelService()
+risk_engine = RiskEngine(model_service=model_service, threat_intel=threat_intel_service)
 
 
 # ─── Lifespan ────────────────────────────────────────────────────────────────
@@ -148,3 +150,45 @@ async def model_info():
     """Returns metadata about the loaded ML model, including features and evaluation metrics."""
     info = model_service.get_model_info()
     return ModelInfoResponse(**info)
+
+
+@app.get(
+    "/threat-intel/status",
+    summary="Threat intelligence configuration status",
+    tags=["Infrastructure"],
+)
+async def threat_intel_status():
+    """Returns the operational status of external threat intelligence feeds."""
+    return {
+        "configured": threat_intel_service.is_configured(),
+        "provider": "google_safe_browsing" if threat_intel_service.is_configured() else "none",
+        "mode": "hybrid_threat_intel_and_local" if threat_intel_service.is_configured() else "fully_local_ml_heuristics",
+        "notice": (
+            "Missing threat feed match != Safe. Zero-day phishing domains are not yet indexed in feeds. "
+            "TrustShield uses multi-layer local ML and heuristic analysis regardless of threat feed status."
+        ),
+    }
+
+
+@app.get(
+    "/methodology",
+    summary="Transparent detection methodology overview",
+    tags=["Transparency"],
+)
+async def methodology():
+    """Returns transparent overview of detection architecture, features, and evidence levels."""
+    return {
+        "engine": "TrustShield Adaptive Phishing Detection & Website Trust Engine",
+        "architecture": {
+            "tier_1_heuristics": "High-confidence structural URL pattern rules (IP host, @ symbol, double slash, suspicious TLD)",
+            "tier_2_dom_signals": "Privacy-preserving structural DOM checks (external form actions, credential input counts; no field values collected)",
+            "tier_3_ml_inference": "Random Forest classifier trained on 11 structural features mapping to UCI Phishing dataset schema",
+            "tier_4_threat_intel": "Optional Google Safe Browsing Lookup v4 integration",
+        },
+        "score_interpretation": {
+            "0-39": "Low Risk (absence of detected structural credential-theft patterns)",
+            "40-69": "Suspicious (concerning structural attributes or medium model probability)",
+            "70-100": "High Risk (credential theft indicators, external submit targets, or confirmed threat feed match)",
+        },
+        "privacy_guarantee": "Zero collection of user passwords, form inputs, cookies, tokens, or browsing history.",
+    }
